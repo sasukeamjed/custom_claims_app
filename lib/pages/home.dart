@@ -1,68 +1,26 @@
+import 'package:customclaimsapp/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:customclaimsapp/services/auth.dart';
-
 
 class Home extends StatelessWidget {
-
-  TextEditingController textEmail = TextEditingController();
-  TextEditingController textPassword = TextEditingController();
-
-
   @override
   Widget build(BuildContext context) {
-    AuthService _auth = Provider.of<AuthService>(context);
+    final _auth = Provider.of<AuthService>(context);
+    print('HomePage is build');
     return Scaffold(
-      appBar: AppBar(
-
-        title: Text('Custom Claim'),
-      ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            TextField(
-              decoration: InputDecoration(
-                  hintText: 'Email'
-              ),
-              controller: textEmail,
-            ),
+            Text('This is home page'),
             SizedBox(
-              height: 20,
+              height: 25,
             ),
-            TextField(
-              controller: textPassword,
-              decoration: InputDecoration(
-                  hintText: 'Password'
-              ),
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                RaisedButton(
-                  child: Text('Login'),
-                  onPressed: () async{
-                    await _auth.login(textEmail.text, textPassword.text);
-                  },
-                ),
-                SizedBox(width: 20,),
-                RaisedButton(
-                  child: Text('Register'),
-                  onPressed: () async{
-                    await _auth.register(textEmail.text, textPassword.text);
-                  },
-                ),
-                SizedBox(width: 20,),
-                RaisedButton(
-                  child: Text('Signout'),
-                  onPressed: () async{
-                    await _auth.logout();
-                  },
-                ),
-              ],
+            RaisedButton(
+              child: Text('Signout'),
+              onPressed: () async{
+                await _auth.logout();
+              },
             ),
           ],
         ),
