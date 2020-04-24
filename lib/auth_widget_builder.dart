@@ -9,13 +9,12 @@ class AuthWidgetBuilder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print('MainAuthWidget is build');
+
     final _auth = Provider.of<AuthService>(context);
     return StreamBuilder(
       stream: _auth.checkUser(),
       builder: (BuildContext context, AsyncSnapshot<FirebaseUser> snapshot){
         final user = snapshot.data;
-        print(snapshot.connectionState);
         if(user != null){
           return   MaterialApp(
             title: 'Flutter Demo',

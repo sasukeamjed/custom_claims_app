@@ -11,7 +11,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print('MyApp is build');
     return MultiProvider(
       providers: [
         Provider<AuthService>(

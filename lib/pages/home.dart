@@ -6,7 +6,7 @@ class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final _auth = Provider.of<AuthService>(context);
-    print('HomePage is build');
+
     return Scaffold(
       body: Center(
         child: Column(

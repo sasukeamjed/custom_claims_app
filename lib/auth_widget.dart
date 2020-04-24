@@ -1,3 +1,4 @@
+import 'package:customclaimsapp/pages/admin_pages/main_admin_page.dart';
 import 'package:customclaimsapp/pages/home.dart';
 import 'package:customclaimsapp/pages/sign_in_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -12,9 +13,8 @@ class Auth extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print('AuthWidget is build');
     if(userSnapshot.connectionState == ConnectionState.active){
-      return userSnapshot.hasData ? Home(): SignInPage();
+      return userSnapshot.hasData ? MainAdminPage(): SignInPage();
     }
     return Scaffold(
       body: Center(
