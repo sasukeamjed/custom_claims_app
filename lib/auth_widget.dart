@@ -14,7 +14,7 @@ class Auth extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if(userSnapshot.connectionState == ConnectionState.active){
-      return userSnapshot.hasData ? MainAdminPage(): SignInPage();
+      return userSnapshot.hasData ? getClaim(context, getClaims(userSnapshot)): SignInPage();
     }
     return Scaffold(
       body: Center(
@@ -22,4 +22,24 @@ class Auth extends StatelessWidget {
       ),
     );
   }
+
+  Future<Map<dynamic, dynamic>> getClaims(AsyncSnapshot<FirebaseUser> userSnapshot) async{
+    IdTokenResult result = await userSnapshot.data.getIdToken();
+    return result.claims;
+  }
 }
+
+Widget getClaim(BuildContext context, Future func){
+  return FutureBuilder(
+    future: func,
+    builder: (context, data){
+      print('this is data from auth_widget.dart line 31: $data');
+      if(data.connectionState == ConnectionState.active){
+        return MainAdminPage();
+      }
+      return MainAdminPage();
+    },
+  );
+}
+
+
