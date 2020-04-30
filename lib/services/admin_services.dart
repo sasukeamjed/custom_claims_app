@@ -15,4 +15,8 @@ class AdminService{
     });
   }
 
+  Future<Map<dynamic, dynamic>> registerNewShop({@required String shopName, @required String shopOwnerName, @required shopOwnerEmail, @required String shopOwnerPhoneNumber}){
+
+  }
+
 }

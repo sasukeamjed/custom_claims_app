@@ -1,6 +1,6 @@
 import 'package:customclaimsapp/pages/admin_pages/main_admin_page.dart';
 import 'package:customclaimsapp/pages/home.dart';
-import 'package:customclaimsapp/pages/sign_in_page.dart';
+import 'package:customclaimsapp/pages/auth_pages/sign_in_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -32,9 +32,13 @@ class Auth extends StatelessWidget {
 Widget getClaim(BuildContext context, Future func){
   return FutureBuilder(
     future: func,
-    builder: (context, data){
-      print('this is data from auth_widget.dart line 31: $data');
-      if(data.connectionState == ConnectionState.active){
+    builder: (context, snapshot){
+
+      if(snapshot.hasData){
+        print('it has data');
+      }
+      if(snapshot.connectionState == ConnectionState.active){
+        print(snapshot.data['phone_number']);
         return MainAdminPage();
       }
       return MainAdminPage();
