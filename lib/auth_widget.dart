@@ -6,15 +6,40 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:customclaimsapp/services/auth.dart';
 
-class Auth extends StatelessWidget {
+class Auth extends StatefulWidget {
 
   const Auth({Key key, @required this.userSnapshot}) : super(key: key);
   final AsyncSnapshot<FirebaseUser> userSnapshot;
 
   @override
+  _AuthState createState() => _AuthState();
+}
+
+class _AuthState extends State<Auth> {
+
+  Widget result;
+
+  @override
+  void initState() {
+    result = Scaffold(
+      body: Center(
+        child: CircularProgressIndicator(),
+      ),
+    );
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    // TODO: implement didChangeDependencies
+    getClaim(context, getClaims(widget.userSnapshot));
+    super.didChangeDependencies();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    if(userSnapshot.connectionState == ConnectionState.active){
-      return userSnapshot.hasData ? getClaim(context, getClaims(userSnapshot)): SignInPage();
+    if(widget.userSnapshot.connectionState == ConnectionState.active){
+      return widget.userSnapshot.hasData ? result: SignInPage();
     }
     return Scaffold(
       body: Center(
@@ -27,23 +52,38 @@ class Auth extends StatelessWidget {
     IdTokenResult result = await userSnapshot.data.getIdToken();
     return result.claims;
   }
-}
 
-Widget getClaim(BuildContext context, Future func){
-  return FutureBuilder(
-    future: func,
-    builder: (context, snapshot){
+  Widget getClaim(BuildContext context, Future func){
+    return FutureBuilder(
+      future: func,
+      builder: (context, snapshot){
 
-      if(snapshot.hasData){
-        print('it has data');
-      }
-      if(snapshot.connectionState == ConnectionState.active){
-        print(snapshot.data['phone_number']);
+//      if(snapshot.hasData){
+//        print(snapshot.data['phone_number']);
+//        print('it has data');
+//      }
+//      print('this the future function');
+        print(snapshot.connectionState);
+        if(snapshot.connectionState == ConnectionState.done){
+          return MainAdminPage();
+        }
+        else{
+          return Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }
+//      if(snapshot.connectionState == ConnectionState.active){
+//
+//        return MainAdminPage();
+//      }
         return MainAdminPage();
-      }
-      return MainAdminPage();
-    },
-  );
+      },
+    );
+  }
+
+
 }
 
 
