@@ -19,10 +19,10 @@ class AuthService{
   Stream<FirebaseUser> creatingUser(){
     //ToDo: goal is to return a stream of MainUser
     //ToDo: get the firebase user
-//    _auth.onAuthStateChanged.map((FirebaseUser firebaseUser) async{
-//
-//    });
-    return _auth.onAuthStateChanged;
+    _auth.onAuthStateChanged.map((FirebaseUser firebaseUser) async{
+
+    });
+//    return _auth.onAuthStateChanged;
     //ToDo: check what claim it has
     //ToDo: return that user depending on that claim
   }
