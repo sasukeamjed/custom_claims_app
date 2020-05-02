@@ -36,10 +36,11 @@ class _AuthState extends State<Auth> {
     super.didChangeDependencies();
   }
 
+
   @override
   Widget build(BuildContext context) {
     if(widget.userSnapshot.connectionState == ConnectionState.active){
-      return widget.userSnapshot.hasData ? result: SignInPage();
+      return widget.userSnapshot.hasData ? MainAdminPage(): SignInPage();
     }
     return Scaffold(
       body: Center(
