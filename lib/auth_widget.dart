@@ -1,3 +1,4 @@
+import 'package:customclaimsapp/models/users/main_user.dart';
 import 'package:customclaimsapp/pages/admin_pages/main_admin_page.dart';
 import 'package:customclaimsapp/pages/home.dart';
 import 'package:customclaimsapp/pages/auth_pages/sign_in_page.dart';
@@ -9,7 +10,7 @@ import 'package:customclaimsapp/services/auth.dart';
 class Auth extends StatefulWidget {
 
   const Auth({Key key, @required this.userSnapshot}) : super(key: key);
-  final AsyncSnapshot<FirebaseUser> userSnapshot;
+  final AsyncSnapshot<MainUser> userSnapshot;
 
   @override
   _AuthState createState() => _AuthState();
@@ -17,29 +18,14 @@ class Auth extends StatefulWidget {
 
 class _AuthState extends State<Auth> {
 
-  Widget result;
-
-  @override
-  void initState() {
-    result = Scaffold(
-      body: Center(
-        child: CircularProgressIndicator(),
-      ),
-    );
-    super.initState();
-  }
-
-  @override
-  void didChangeDependencies() {
-    // TODO: implement didChangeDependencies
-    getClaim(context, getClaims(widget.userSnapshot));
-    super.didChangeDependencies();
-  }
-
 
   @override
   Widget build(BuildContext context) {
+
     if(widget.userSnapshot.connectionState == ConnectionState.active){
+      if(widget.userSnapshot.hasData){
+        
+      }
       return widget.userSnapshot.hasData ? MainAdminPage(): SignInPage();
     }
     return Scaffold(
@@ -49,10 +35,10 @@ class _AuthState extends State<Auth> {
     );
   }
 
-  Future<Map<dynamic, dynamic>> getClaims(AsyncSnapshot<FirebaseUser> userSnapshot) async{
-    IdTokenResult result = await userSnapshot.data.getIdToken();
-    return result.claims;
-  }
+//  Future<Map<dynamic, dynamic>> getClaims(AsyncSnapshot<FirebaseUser> userSnapshot) async{
+//    IdTokenResult result = await userSnapshot.data.getIdToken();
+//    return result.claims;
+//  }
 
   Widget getClaim(BuildContext context, Future func){
     return FutureBuilder(

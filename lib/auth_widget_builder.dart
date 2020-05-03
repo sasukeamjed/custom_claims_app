@@ -1,4 +1,5 @@
 import 'package:customclaimsapp/auth_widget.dart';
+import 'package:customclaimsapp/models/users/main_user.dart';
 import 'package:customclaimsapp/pages/auth_pages/sign_in_page.dart';
 import 'package:customclaimsapp/services/auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -13,7 +14,7 @@ class AuthWidgetBuilder extends StatelessWidget {
     final _auth = Provider.of<AuthService>(context);
     return StreamBuilder(
       stream: _auth.creatingUser(),
-      builder: (BuildContext context, AsyncSnapshot<FirebaseUser> snapshot){
+      builder: (BuildContext context, AsyncSnapshot<MainUser> snapshot){
         final user = snapshot.data;
         if(user != null){
           return   MaterialApp(

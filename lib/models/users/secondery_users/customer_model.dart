@@ -5,6 +5,6 @@ class Customer extends MainUser{
 
   final String phoneNumber;
 
-  Customer({@required uid, @required email, @required claim,@required this.phoneNumber}): super(uid: uid, email: email, claim: claim);
+  Customer({@required uid, @required email, @required claim,@required this.phoneNumber}): super(uid: uid, email: email, idTokenResult: claim);
 
 }
