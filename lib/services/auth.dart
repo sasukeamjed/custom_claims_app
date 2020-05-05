@@ -22,7 +22,7 @@ class AuthService{
     _auth.onAuthStateChanged.map((FirebaseUser firebaseUser) async{
 
     });
-//    return _auth.onAuthStateChanged;
+    return _auth.onAuthStateChanged;
     //ToDo: check what claim it has
     //ToDo: return that user depending on that claim
   }

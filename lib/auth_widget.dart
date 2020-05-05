@@ -7,7 +7,6 @@ import 'package:provider/provider.dart';
 import 'package:customclaimsapp/services/auth.dart';
 
 class Auth extends StatefulWidget {
-
   const Auth({Key key, @required this.userSnapshot}) : super(key: key);
   final AsyncSnapshot<FirebaseUser> userSnapshot;
 
@@ -16,27 +15,43 @@ class Auth extends StatefulWidget {
 }
 
 class _AuthState extends State<Auth> {
-  Future<Map<dynamic, dynamic>> map;
   @override
-  void initState() {
-    map = getClaims(widget.userSnapshot);
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context){
-    return widget.userSnapshot.hasData ? FutureBuilder(
-      future: map,
-      builder: (context, snapshot){
-        if(snapshot.hasData){
-          return MainAdminPage();
-        }
+  Widget build(BuildContext context) {
+    print('Secondery Auth Widget is Build');
+    print(widget.userSnapshot.connectionState);
+    if (widget.userSnapshot.connectionState == ConnectionState.active) {
+      return widget.userSnapshot.hasData
+          ? FutureBuilder(
+              future: widget.userSnapshot.data.getIdToken(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.done) {
+                  return MainAdminPage();
+                }
+                return Builder(
+                  //ToDo:Delete the builder function
+                  builder: (BuildContext context){
+                    print('this is a inside builder');
+                    return Scaffold(
+                      body: Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    );
+                  },
+                );
+              },
+            )
+          : SignInPage();
+    }
+    //ToDo:Delete the builder function
+    return Builder(
+      builder: (BuildContext context){
+        print('this is a outside builder');
         return Scaffold(
-          body: CircularProgressIndicator(),
+          body: Center(
+            child: CircularProgressIndicator(),
+          ),
         );
       },
-    ) : Scaffold(
-      body: CircularProgressIndicator(),
     );
   }
 
@@ -52,16 +67,17 @@ class _AuthState extends State<Auth> {
 //    );
 //  }
 
-  Future<Map<dynamic, dynamic>> getClaims(AsyncSnapshot<FirebaseUser> userSnapshot) async{
+  Future<Map<dynamic, dynamic>> getClaims(
+      AsyncSnapshot<FirebaseUser> userSnapshot) async {
     print('get claims function');
     IdTokenResult result = await userSnapshot.data.getIdToken();
     return result.claims;
   }
 
-  Widget futureBuildFunc(BuildContext context, AsyncSnapshot snapshot){
+  Widget futureBuildFunc(BuildContext context, AsyncSnapshot snapshot) {
     return FutureBuilder(
       future: getClaims(snapshot),
-      builder: (context, snapshot){
+      builder: (context, snapshot) {
         print('Future function has been build');
 
 //      if(snapshot.hasData){
@@ -70,10 +86,9 @@ class _AuthState extends State<Auth> {
 //      }
 //      print('this the future function');
         print(snapshot.connectionState);
-        if(snapshot.connectionState == ConnectionState.done){
+        if (snapshot.connectionState == ConnectionState.done) {
           return MainAdminPage();
-        }
-        else{
+        } else {
           return Scaffold(
             body: Center(
               child: CircularProgressIndicator(),
@@ -88,8 +103,4 @@ class _AuthState extends State<Auth> {
       },
     );
   }
-
-
 }
-
-
