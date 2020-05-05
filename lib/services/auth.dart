@@ -22,7 +22,7 @@ class AuthService{
     return _auth.onAuthStateChanged.map((FirebaseUser firebaseUser){
       return MainUser(uid: firebaseUser.uid, email: firebaseUser.email, getIdTokenResult: firebaseUser.getIdToken());
     });
-//    return _auth.onAuthStateChanged;
+    return _auth.onAuthStateChanged;
     //ToDo: check what claim it has
     //ToDo: return that user depending on that claim
   }

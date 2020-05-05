@@ -1,4 +1,3 @@
-import 'package:customclaimsapp/models/users/main_user.dart';
 import 'package:customclaimsapp/pages/admin_pages/main_admin_page.dart';
 import 'package:customclaimsapp/pages/home.dart';
 import 'package:customclaimsapp/pages/auth_pages/sign_in_page.dart';
@@ -8,42 +7,78 @@ import 'package:provider/provider.dart';
 import 'package:customclaimsapp/services/auth.dart';
 
 class Auth extends StatefulWidget {
-
   const Auth({Key key, @required this.userSnapshot}) : super(key: key);
-  final AsyncSnapshot<MainUser> userSnapshot;
+  final AsyncSnapshot<FirebaseUser> userSnapshot;
 
   @override
   _AuthState createState() => _AuthState();
 }
 
 class _AuthState extends State<Auth> {
-
-
   @override
   Widget build(BuildContext context) {
-
-    if(widget.userSnapshot.connectionState == ConnectionState.active){
-      if(widget.userSnapshot.hasData){
-        
-      }
-      return widget.userSnapshot.hasData ? MainAdminPage(): SignInPage();
+    print('Secondery Auth Widget is Build');
+    print(widget.userSnapshot.connectionState);
+    if (widget.userSnapshot.connectionState == ConnectionState.active) {
+      return widget.userSnapshot.hasData
+          ? FutureBuilder(
+              future: widget.userSnapshot.data.getIdToken(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.done) {
+                  return MainAdminPage();
+                }
+                return Builder(
+                  //ToDo:Delete the builder function
+                  builder: (BuildContext context){
+                    print('this is a inside builder');
+                    return Scaffold(
+                      body: Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    );
+                  },
+                );
+              },
+            )
+          : SignInPage();
     }
-    return Scaffold(
-      body: Center(
-        child: CircularProgressIndicator(),
-      ),
+    //ToDo:Delete the builder function
+    return Builder(
+      builder: (BuildContext context){
+        print('this is a outside builder');
+        return Scaffold(
+          body: Center(
+            child: CircularProgressIndicator(),
+          ),
+        );
+      },
     );
   }
 
-//  Future<Map<dynamic, dynamic>> getClaims(AsyncSnapshot<FirebaseUser> userSnapshot) async{
-//    IdTokenResult result = await userSnapshot.data.getIdToken();
-//    return result.claims;
+//  @override
+//  Widget build(BuildContext context) {
+//    if(widget.userSnapshot.connectionState == ConnectionState.active){
+//      return widget.userSnapshot.hasData ? futureBuildFunc(context, widget.userSnapshot): SignInPage();
+//    }
+//    return Scaffold(
+//      body: Center(
+//        child: CircularProgressIndicator(),
+//      ),
+//    );
 //  }
 
-  Widget getClaim(BuildContext context, Future func){
+  Future<Map<dynamic, dynamic>> getClaims(
+      AsyncSnapshot<FirebaseUser> userSnapshot) async {
+    print('get claims function');
+    IdTokenResult result = await userSnapshot.data.getIdToken();
+    return result.claims;
+  }
+
+  Widget futureBuildFunc(BuildContext context, AsyncSnapshot snapshot) {
     return FutureBuilder(
-      future: func,
-      builder: (context, snapshot){
+      future: getClaims(snapshot),
+      builder: (context, snapshot) {
+        print('Future function has been build');
 
 //      if(snapshot.hasData){
 //        print(snapshot.data['phone_number']);
@@ -51,10 +86,9 @@ class _AuthState extends State<Auth> {
 //      }
 //      print('this the future function');
         print(snapshot.connectionState);
-        if(snapshot.connectionState == ConnectionState.done){
+        if (snapshot.connectionState == ConnectionState.done) {
           return MainAdminPage();
-        }
-        else{
+        } else {
           return Scaffold(
             body: Center(
               child: CircularProgressIndicator(),
@@ -69,8 +103,4 @@ class _AuthState extends State<Auth> {
       },
     );
   }
-
-
 }
-
-

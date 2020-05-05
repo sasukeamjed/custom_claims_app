@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 class AddUserPage extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
+    print('Add User Page is Build');
     return Scaffold(
       backgroundColor: Colors.brown,
       body: DefaultTabController(

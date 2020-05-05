@@ -18,6 +18,7 @@ class _MainAdminPageState extends State<MainAdminPage> {
 
   @override
   Widget build(BuildContext context) {
+    print('Main Admin Page is Build');
     final _auth = Provider.of<AuthService>(context);
     return Scaffold(
       appBar: AppBar(

@@ -9,6 +9,7 @@ class AddAdminPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('Add Admin Page is Build');
     final adminService = Provider.of<AdminService>(context);
     return Container(
       width: double.infinity,
