@@ -18,9 +18,17 @@ class _AuthWidgetBuilderState extends State<AuthWidgetBuilder> {
   Future getUser;
   @override
   void initState() {
+//    authService = Provider.of<AuthService>(context);
+//    getUser = authService.getCurrentUser();
+    super.initState();
+  }
+
+
+  @override
+  void didChangeDependencies() {
     authService = Provider.of<AuthService>(context);
     getUser = authService.getCurrentUser();
-    super.initState();
+    super.didChangeDependencies();
   }
   @override
   Widget build(BuildContext context) {
@@ -30,7 +38,7 @@ class _AuthWidgetBuilderState extends State<AuthWidgetBuilder> {
       builder: (BuildContext context, AsyncSnapshot snapshot){
         if(snapshot.connectionState == ConnectionState.done){
           if(authService.currentUser != null){
-            return MainAdminPage();
+            return Provider.value(value: authService.currentUser,child: MainAdminPage(),);
           }
           return SignInPage();
         }

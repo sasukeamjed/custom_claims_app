@@ -1,7 +1,9 @@
 import 'package:customclaimsapp/models/users/main_user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:provider/provider.dart';
 
-class AuthService{
+class AuthService extends ChangeNotifier{
 
   bool fetchingData = false;
 
@@ -13,6 +15,7 @@ class AuthService{
   Future<AuthResult> login(email, password) async{
     try{
       await _auth.signInWithEmailAndPassword(email: email, password: password);
+      notifyListeners();
     }catch(e){
       print(e);
     }
@@ -50,6 +53,8 @@ class AuthService{
 
   Future<void> logout() async{
     await _auth.signOut();
+    currentUser = null;
+    notifyListeners();
   }
 }
 
