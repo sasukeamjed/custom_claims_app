@@ -5,6 +5,8 @@ class AuthService{
 
   bool fetchingData = false;
 
+  MainUser currentUser;
+
 
   FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -16,16 +18,13 @@ class AuthService{
     }
   }
 
-  Stream<MainUser> creatingUser(){
-    //ToDo: goal is to return a stream of MainUser
-    //ToDo: get the firebase user
-    return _auth.onAuthStateChanged.map((FirebaseUser firebaseUser){
-      return MainUser(uid: firebaseUser.uid, email: firebaseUser.email, getIdTokenResult: firebaseUser.getIdToken());
-    });
-    return _auth.onAuthStateChanged;
-    //ToDo: check what claim it has
-    //ToDo: return that user depending on that claim
+  Future<void> getCurrentUser() async{
+    var user = await _auth.currentUser();
+    IdTokenResult idTokenResult = await user.getIdToken();
+    Map claims = idTokenResult.claims;
+    currentUser = MainUser(uid: user.uid, email: user.email, claims: claims);
   }
+
 
   Future<Map> getClaim(FirebaseUser firebaseUser) async{
     IdTokenResult idTokenResult = await firebaseUser.getIdToken();

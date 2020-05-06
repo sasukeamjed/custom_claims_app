@@ -1,37 +1,43 @@
 import 'package:customclaimsapp/auth_widget.dart';
+import 'package:customclaimsapp/models/users/main_user.dart';
+import 'package:customclaimsapp/pages/admin_pages/main_admin_page.dart';
 import 'package:customclaimsapp/pages/auth_pages/sign_in_page.dart';
 import 'package:customclaimsapp/services/auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class AuthWidgetBuilder extends StatelessWidget {
+class AuthWidgetBuilder extends StatefulWidget {
 
   @override
-  Widget build(BuildContext context) {
-    print('main auth widget is build');
+  _AuthWidgetBuilderState createState() => _AuthWidgetBuilderState();
+}
 
-    final _auth = Provider.of<AuthService>(context);
-    return StreamBuilder(
-      stream: _auth.creatingUser(),
-      builder: (BuildContext context, AsyncSnapshot<FirebaseUser> snapshot){
-//        print(snapshot.hasData);
-        final user = snapshot.data;
-        if(user != null){
-          return   MaterialApp(
-            title: 'Flutter Demo',
-            theme: ThemeData(
-              primarySwatch: Colors.blue,
-            ),
-            home: Auth(userSnapshot: snapshot,),
-          );
+class _AuthWidgetBuilderState extends State<AuthWidgetBuilder> {
+  AuthService authService;
+  Future getUser;
+  @override
+  void initState() {
+    authService = Provider.of<AuthService>(context);
+    getUser = authService.getCurrentUser();
+    super.initState();
+  }
+  @override
+  Widget build(BuildContext context) {
+
+    return FutureBuilder(
+      future: getUser,
+      builder: (BuildContext context, AsyncSnapshot snapshot){
+        if(snapshot.connectionState == ConnectionState.done){
+          if(authService.currentUser != null){
+            return MainAdminPage();
+          }
+          return SignInPage();
         }
-        return   MaterialApp(
-          title: 'Flutter Demo',
-          theme: ThemeData(
-            primarySwatch: Colors.blue,
+        return Scaffold(
+          body: Center(
+            child: CircularProgressIndicator(),
           ),
-          home: Auth(userSnapshot: snapshot,),
         );
       },
     );

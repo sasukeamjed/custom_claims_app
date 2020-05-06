@@ -20,5 +20,5 @@ class ShopOwner extends MainUser {
       @required this.shopOwnerPhoneNumber,
       @required this.shopLocation,
       @required this.shop})
-      : super(uid: uid, email: shopOwnerEmail, idTokenResult: claim);
+      : super(uid: uid, email: shopOwnerEmail);
 }

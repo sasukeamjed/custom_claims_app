@@ -17,7 +17,9 @@ class MyApp extends StatelessWidget {
           create: (_)=>AuthService(),
         ),
       ],
-      child: AuthWidgetBuilder(),
+      child: MaterialApp(
+        home: AuthWidgetBuilder(),
+      ),
     );
   }
 }
