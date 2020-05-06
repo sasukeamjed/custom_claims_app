@@ -19,8 +19,8 @@ class AddUserPage extends StatelessWidget{
                 color: Theme.of(context).accentColor,
                 child: TabBar(
                   tabs: [
-                    Tab(icon: Icon(Icons.directions_car)),
-                    Tab(icon: Icon(Icons.directions_transit)),
+                    Tab(icon: Icon(Icons.supervised_user_circle)),
+                    Tab(icon: Icon(Icons.shop)),
                   ],
                 ),
               ),

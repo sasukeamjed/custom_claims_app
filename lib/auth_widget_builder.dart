@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class AuthWidgetBuilder extends StatefulWidget {
-
   @override
   _AuthWidgetBuilderState createState() => _AuthWidgetBuilderState();
 }
@@ -16,6 +15,7 @@ class AuthWidgetBuilder extends StatefulWidget {
 class _AuthWidgetBuilderState extends State<AuthWidgetBuilder> {
   AuthService authService;
   Future getUser;
+
   @override
   void initState() {
 //    authService = Provider.of<AuthService>(context);
@@ -23,22 +23,25 @@ class _AuthWidgetBuilderState extends State<AuthWidgetBuilder> {
     super.initState();
   }
 
-
   @override
   void didChangeDependencies() {
     authService = Provider.of<AuthService>(context);
     getUser = authService.getCurrentUser();
     super.didChangeDependencies();
   }
+
   @override
   Widget build(BuildContext context) {
-
     return FutureBuilder(
       future: getUser,
-      builder: (BuildContext context, AsyncSnapshot snapshot){
-        if(snapshot.connectionState == ConnectionState.done){
-          if(authService.currentUser != null){
-            return Provider.value(value: authService.currentUser,child: MainAdminPage(),);
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          if (authService.currentUser != null) {
+            print(authService.currentUser.claims);
+            return Provider.value(
+              value: authService.currentUser,
+              child: MainAdminPage(),
+            );
           }
           return SignInPage();
         }
