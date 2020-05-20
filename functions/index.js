@@ -12,6 +12,10 @@ exports.createNewUser = functions.https.onCall(async (data, context) => {
     return addAdmin(data['email'], data['phoneNumber'], data['fullName']);
 });
 
+exports.createShopOwner = functions.https.onCall(async => {
+  return addShopOwner();
+});
+
 const addAdmin = async (email, phoneNumber, fullName) => {
     return admin.auth().createUser({
         email: email,
