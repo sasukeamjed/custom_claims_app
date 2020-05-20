@@ -24,21 +24,34 @@ class AdminService {
   }
 
   Future<Map<dynamic, dynamic>> registerNewShop({
+    @required String idToken,
     @required String shopName,
     @required String shopOwnerName,
     @required shopOwnerEmail,
     @required String shopOwnerPhoneNumber,
     File shopImage,
-  }) {
+  }) async{
+
+    String shopImageUrl;
 
     if(shopImage != null){
-      StorageUploadTask task = _firebaseStorage.ref().putFile(file);
+      StorageUploadTask uploadTask = _firebaseStorage.ref().child('$shopName/$shopName'+ '_image.png').putFile(shopImage);
+      shopImageUrl = await (await uploadTask.onComplete).ref.getDownloadURL();
     }
 
     CloudFunctions.instance
         .getHttpsCallable(functionName: 'createShopOwner')
         .call({
-
+      "idToken" : idToken,
+      "shopName" : shopName,
+      "shopOwnerEmail" : shopOwnerEmail,
+      "shopImageUrl" : shopImageUrl,
+      "shopOwnerName" : shopOwnerName,
+      "shopOwnerPhoneNumber" : shopOwnerPhoneNumber,
+    }).then((res) {
+      print(res.data);
+    }).catchError((e){
+      print(e);
     });
   }
 }

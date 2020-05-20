@@ -75,6 +75,7 @@ const addShopOwner = async (
       console.log('user was created with the following uid:' + newUser.uid);
       await admin.auth().setCustomUserClaims(newUser.uid, { claim: 'ShopOwner' });
       user = newUser;
+      return {};
     }).then(() => {
       return shopsCollection.doc(shopName).set({
         shopName,
