@@ -12,8 +12,12 @@ exports.createNewUser = functions.https.onCall(async (data, context) => {
     return addAdmin(data['email'], data['phoneNumber'], data['fullName']);
 });
 
-exports.createShopOwner = functions.https.onCall(async => {
-  return addShopOwner();
+exports.createShopOwner = functions.https.onCall(async (data, context)=> {
+  return addShopOwner(data['idToken'], data['shopName'], data['shopOwnerEmail'], data['shopOwnerPhoneNumber'], data['shopOwnerName'], data['shopImageUrl']);
+});
+
+exports.onUserCreated = functions.auth.user().onCreate((user)=>{
+  console.log(user.customClaims);
 });
 
 const addAdmin = async (email, phoneNumber, fullName) => {
@@ -40,15 +44,16 @@ const addShopOwner = async (
     email,
     phoneNumber,
     shopOwnerName,
+    shopImageUrl,
   ) => {
     var user;
     var shopsCollection = db.collection('Shops');
   
-  
+    
     return admin.auth().verifyIdToken(idToken).then(async (decodedToken) => {
       console.log(decodedToken);
   
-      if (decodedToken.claim === 'Admin') {
+      if (decodedToken.claim === 'admin') {
   
         let doc = await shopsCollection.doc(shopName).get();
   
@@ -63,17 +68,17 @@ const addShopOwner = async (
           emailVerified: false,
           password: '123456',
           displayName: shopName,
-          photoURL: 'https://firebasestorage.googleapis.com/v0/b/fir-auth-test-a160f.appspot.com/o/default_shop_image.jpg?alt=media&token=70482119-01d4-4b38-b05c-f3c31be420fc',
+          photoURL: shopImageUrl,
           disabled: false
         });
   
       } else {
-        throw new Error('Unauthrized line 104');
+        throw new Error('Unauthrized line 72');
       }
   
     }).then(async (newUser) => {
       console.log('user was created with the following uid:' + newUser.uid);
-      await admin.auth().setCustomUserClaims(newUser.uid, { claim: 'ShopOwner' });
+      await admin.auth().setCustomUserClaims(newUser.uid, { claim: 'shop' });
       user = newUser;
       return {};
     }).then(() => {
@@ -102,3 +107,4 @@ const addShopOwner = async (
   
   
   };
+

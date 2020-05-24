@@ -5,9 +5,9 @@ import 'package:flutter/cupertino.dart';
 class MainUser{
   final String uid;
   final String email;
-  final String claims;
+  final String claim;
   final String token;
 
-  MainUser({this.uid, this.email, this.claims, this.token}) : assert(uid != null && email != null);
+  MainUser({this.uid, this.email, this.claim, this.token}) : assert(uid != null && email != null);
 
 }

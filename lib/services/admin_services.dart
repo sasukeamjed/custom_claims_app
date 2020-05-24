@@ -23,7 +23,7 @@ class AdminService {
     });
   }
 
-  Future<Map<dynamic, dynamic>> registerNewShop({
+  Future<void> registerNewShop({
     @required String idToken,
     @required String shopName,
     @required String shopOwnerName,
@@ -32,13 +32,12 @@ class AdminService {
     File shopImage,
   }) async{
 
-    String shopImageUrl;
+    String shopImageUrl = 'https://firebasestorage.googleapis.com/v0/b/fir-auth-test-a160f.appspot.com/o/default_shop_img%2Fshop.png?alt=media&token=28f490a6-da3f-48c0-b18a-bcfd676d05f9';
 
     if(shopImage != null){
       StorageUploadTask uploadTask = _firebaseStorage.ref().child('$shopName/$shopName'+ '_image.png').putFile(shopImage);
       shopImageUrl = await (await uploadTask.onComplete).ref.getDownloadURL();
     }
-
     CloudFunctions.instance
         .getHttpsCallable(functionName: 'createShopOwner')
         .call({

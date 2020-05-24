@@ -37,7 +37,6 @@ class _AuthWidgetBuilderState extends State<AuthWidgetBuilder> {
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           if (authService.currentUser != null) {
-            print(authService.currentUser.claims);
             return Provider.value(
               value: authService.currentUser,
               child: MainAdminPage(),

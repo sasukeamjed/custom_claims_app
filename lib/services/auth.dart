@@ -25,7 +25,7 @@ class AuthService extends ChangeNotifier{
     var user = await _auth.currentUser();
     IdTokenResult idTokenResult = await user.getIdToken();
     Map claims = idTokenResult.claims;
-    currentUser = MainUser(uid: user.uid, email: user.email, claims: claims['claim'], token: idTokenResult.token);
+    currentUser = MainUser(uid: user.uid, email: user.email, claim: claims['claim'], token: idTokenResult.token);
   }
 
 
