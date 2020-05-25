@@ -9,36 +9,82 @@ const db = admin.firestore();
 // // https://firebase.google.com/docs/functions/write-firebase-functions
 //
 exports.createNewUser = functions.https.onCall(async (data, context) => {
-    return addAdmin(data['email'], data['phoneNumber'], data['fullName']);
+    return addUser(data['email'], data['phoneNumber'], data['fullName']);
 });
 
 exports.createShopOwner = functions.https.onCall(async (data, context)=> {
-  return addShopOwner(data['idToken'], data['shopName'], data['shopOwnerEmail'], data['shopOwnerPhoneNumber'], data['shopOwnerName'], data['shopImageUrl']);
+  if(data['idToken'] === null){
+    return addCustomer(data['email'], data['displayName'], data['phoneNumber']);
+  }
+  return addAdminOrShop(data['idToken'], data['displayName'], data['email'], data['phoneNumber'], data['fullName'], data['shopImageUrl']);
 });
 
 exports.onUserCreated = functions.auth.user().onCreate((user)=>{
-  console.log(user.customClaims);
+  console.log(user);
 });
 
-const addAdmin = async (email, phoneNumber, fullName) => {
-    return admin.auth().createUser({
+const addAdmin = async (idToken, email, phoneNumber, fullName) => {
+  return admin.auth().verifyIdToken(idToken).then(async (decodedToken) => {
+    console.log(decodedToken);
+
+    if (decodedToken.claim === 'admin') {
+      return admin.auth().createUser({
+        displayName: fullName,
         email: email,
-        password: '123456',
-        disabled: false,
-        displayName: 'Admin',
-        emailVerified: false,
         phoneNumber: '+968' + phoneNumber,
-        // photoURL: null,
-    }).then(async (userData) => {
-        // console.log(userData);
-        return await admin.auth().setCustomUserClaims(userData.uid, { claim: 'admin' });
-    }).catch(e => {
-        console.log(e);
-        return e;
-    });
+        emailVerified: false,
+        password: '123456',
+        photoURL: shopImageUrl,
+        disabled: false
+      });
+
+    } else {
+      throw new Error('Unauthrized line 72');
+    }
+
+  }).then(async (newUser) => {
+    console.log('user was created with the following uid:' + newUser.uid);
+    await admin.auth().setCustomUserClaims(newUser.uid, { claim: 'admin' });
+    user = newUser;
+    return {};
+  }).then((res) => {
+    console.log('user with ShopOwner claim was created!!! hope it worked');
+    return user;
+  }).catch(e => {
+    console.log(e.message);
+    if (e.message === '501') {
+      return {
+        error: e.message,
+        message: 'this is a 501 error'
+      }
+    } else {
+      return {
+        error: e.message,
+        message: 'this is a normal error'
+      }
+    }
+  });
 };
 
-const addShopOwner = async (
+const addCustomer = async (email, cusotmerName ,phoneNumber)=>{
+  return admin.auth().createUser({
+    email: email,
+    password: '123456',
+    disabled: false,
+    displayName: cusotmerName,
+    emailVerified: false,
+    phoneNumber: '+968' + phoneNumber,
+    // photoURL: null,
+  }).then(async (userData) => {
+    // console.log(userData);
+    return await admin.auth().setCustomUserClaims(userData.uid, { claim: 'customer' });
+  }).catch(e => {
+    console.log(e);
+    return e;
+  });
+};
+
+const addAdminOrShop = async (
     idToken,
     shopName,
     email,

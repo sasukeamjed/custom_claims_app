@@ -1,3 +1,4 @@
+import 'package:customclaimsapp/models/users/main_user.dart';
 import 'package:customclaimsapp/services/admin_services.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -11,6 +12,7 @@ class AddAdminPage extends StatelessWidget {
   Widget build(BuildContext context) {
     print('Add Admin Page is Build');
     final adminService = Provider.of<AdminService>(context);
+    final currentUser = Provider.of<MainUser>(context);
     return Container(
       width: double.infinity,
       padding: EdgeInsets.all(20.0),
@@ -41,8 +43,8 @@ class AddAdminPage extends StatelessWidget {
             RaisedButton(
               child: Text('Add The Admin'),
               onPressed: () async {
-                await adminService.addAdmin(
-                    _fullName.text, _emailText.text, _phoneNumber.text);
+                await adminService.addAdmin(idToken: currentUser.token,
+                   fullName: _fullName.text, email: _emailText.text, phoneNumber: _phoneNumber.text);
               },
             ),
           ],

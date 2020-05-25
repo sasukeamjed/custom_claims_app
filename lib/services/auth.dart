@@ -24,6 +24,7 @@ class AuthService extends ChangeNotifier{
   Future<void> getCurrentUser() async{
     var user = await _auth.currentUser();
     IdTokenResult idTokenResult = await user.getIdToken();
+    print('getCurrentUser: ${idTokenResult.claims}');
     Map claims = idTokenResult.claims;
     currentUser = MainUser(uid: user.uid, email: user.email, claim: claims['claim'], token: idTokenResult.token);
   }
