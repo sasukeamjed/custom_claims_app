@@ -1,22 +1,20 @@
-import 'package:customclaimsapp/pages/auth_pages/sign_up_page.dart';
+import 'package:customclaimsapp/pages/auth_pages/sign_in_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:customclaimsapp/services/auth.dart';
 
-
-class SignInPage extends StatelessWidget {
-
+class SignUpPage extends StatelessWidget {
+  TextEditingController userName = TextEditingController();
   TextEditingController textEmail = TextEditingController();
   TextEditingController textPassword = TextEditingController();
-
+  TextEditingController phoneNumber = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    print('Sign_in_page is build');
+    print('Sign_up_page is build');
     AuthService _auth = Provider.of<AuthService>(context);
     return Scaffold(
       appBar: AppBar(
-
         title: Text('Custom Claim'),
       ),
       body: Center(
@@ -27,19 +25,29 @@ class SignInPage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 TextField(
-                  decoration: InputDecoration(
-                      hintText: 'Email'
-                  ),
+                  decoration: InputDecoration(hintText: 'Username'),
+                  controller: userName,
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                TextField(
                   controller: textEmail,
+                  decoration: InputDecoration(hintText: 'Email'),
                 ),
                 SizedBox(
                   height: 20,
                 ),
                 TextField(
                   controller: textPassword,
-                  decoration: InputDecoration(
-                      hintText: 'Password'
-                  ),
+                  decoration: InputDecoration(hintText: 'Password'),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                TextField(
+                  controller: phoneNumber,
+                  decoration: InputDecoration(hintText: 'Phone Number'),
                 ),
                 SizedBox(
                   height: 20,
@@ -48,17 +56,23 @@ class SignInPage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     RaisedButton(
-                      child: Text('Login'),
-                      onPressed: () async{
-                        await _auth.login(textEmail.text, textPassword.text);
+                      child: Text('Sign Up'),
+                      onPressed: () async {
+                        await _auth.register(
+                            username: userName.text,
+                            email: textEmail.text,
+                            password: textPassword.text,
+                            phoneNumber: phoneNumber.text);
                       },
                     ),
-                    SizedBox(height: 10,),
+                    SizedBox(
+                      height: 10,
+                    ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         Text(
-                          "You Don't Have An Account ? ",
+                          "You Already Have An Account ? ",
                           style: TextStyle(
                             color: Colors.black,
                             fontSize: 14,
@@ -68,11 +82,11 @@ class SignInPage extends StatelessWidget {
                         GestureDetector(
                           onTap: (){
                             Navigator.pushReplacement(context, MaterialPageRoute(
-                              builder: (context)=> SignUpPage(),
+                              builder: (context)=> SignInPage(),
                             ),);
                           },
                           child: Text(
-                            "Sign Up",
+                            "Sign In",
                             style: TextStyle(
                                 color: Colors.blue,
                                 fontSize: 14,

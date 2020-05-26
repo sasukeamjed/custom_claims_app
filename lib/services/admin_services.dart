@@ -8,7 +8,7 @@ class AdminService {
   FirebaseStorage _firebaseStorage =
       FirebaseStorage(storageBucket: 'gs://fir-auth-test-a160f.appspot.com');
 
-  Future<Map<String, dynamic>> addAdmin({
+  Future<void> addAdmin({
     @required String idToken,
     @required String fullName,
     @required String email,
@@ -17,6 +17,7 @@ class AdminService {
     CloudFunctions.instance
         .getHttpsCallable(functionName: 'createNewUser')
         .call({
+      'idToken': idToken,
       'fullName': fullName,
       'email': email,
       'phoneNumber': phoneNumber,
@@ -47,15 +48,14 @@ class AdminService {
       shopImageUrl = await (await uploadTask.onComplete).ref.getDownloadURL();
     }
     CloudFunctions.instance
-        .getHttpsCallable(functionName: 'createShopOwner')
+        .getHttpsCallable(functionName: 'createNewUser')
         .call({
       "idToken": idToken,
-      "shopName": shopName,
-      "shopOwnerEmail": shopOwnerEmail,
+      "displayName": shopName,
+      "email": shopOwnerEmail,
       "shopImageUrl": shopImageUrl,
-      "shopOwnerName": shopOwnerName,
-      "shopOwnerPhoneNumber": shopOwnerPhoneNumber,
-      "forAdmin": false,
+      "fullName": shopOwnerName,
+      "phoneNumber": shopOwnerPhoneNumber,
     }).then((res) {
       print(res.data);
     }).catchError((e) {

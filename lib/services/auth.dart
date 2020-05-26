@@ -1,3 +1,4 @@
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:customclaimsapp/models/users/main_user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -38,16 +39,30 @@ class AuthService extends ChangeNotifier{
 
 
 
-  Future<AuthResult> register(email, password) async{
-    try{
-      AuthResult authResult = await _auth.createUserWithEmailAndPassword(email: email, password: password);
-//      var idToken = await authResult.user.getIdToken();
-//      print(idToken.claims);
-      return authResult;
-    }
-    catch(e){
-      print('There has been an error: $e');
-    }
+  Future<AuthResult> register({@required String username, @required String email, @required String password, @required String phoneNumber}) async{
+    String shopImageUrl =
+        'https://firebasestorage.googleapis.com/v0/b/fir-auth-test-a160f.appspot.com/o/default_shop_img%2Fshop.png?alt=media&token=28f490a6-da3f-48c0-b18a-bcfd676d05f9';
+
+//    if (shopImage != null) {
+//      StorageUploadTask uploadTask = _firebaseStorage
+//          .ref()
+//          .child('$shopName/$shopName' + '_image.png')
+//          .putFile(shopImage);
+//      shopImageUrl = await (await uploadTask.onComplete).ref.getDownloadURL();
+//    }
+    CloudFunctions.instance
+        .getHttpsCallable(functionName: 'createNewUser')
+        .call({
+      "email": email,
+      "password": password,
+      "displayName": username,
+      "phoneNumber": phoneNumber,
+    }).then((res) {
+      print(res.data);
+    }).catchError((e) {
+      print(e);
+    });
+    notifyListeners();
   }
 
 

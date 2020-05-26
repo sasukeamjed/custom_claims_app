@@ -20,6 +20,7 @@ class _AuthWidgetBuilderState extends State<AuthWidgetBuilder> {
   void initState() {
 //    authService = Provider.of<AuthService>(context);
 //    getUser = authService.getCurrentUser();
+
     super.initState();
   }
 
@@ -32,11 +33,13 @@ class _AuthWidgetBuilderState extends State<AuthWidgetBuilder> {
 
   @override
   Widget build(BuildContext context) {
+    print('AuthWidgetBuilder is rebuild');
     return FutureBuilder(
       future: getUser,
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           if (authService.currentUser != null) {
+            print(authService.currentUser.claim);
             return Provider.value(
               value: authService.currentUser,
               child: MainAdminPage(),
