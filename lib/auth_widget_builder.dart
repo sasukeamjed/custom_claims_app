@@ -1,6 +1,7 @@
 import 'package:customclaimsapp/auth_widget.dart';
 import 'package:customclaimsapp/models/users/main_user.dart';
 import 'package:customclaimsapp/pages/admin_pages/main_admin_page.dart';
+import 'package:customclaimsapp/pages/auth_pages/auth_page.dart';
 import 'package:customclaimsapp/pages/auth_pages/sign_in_page.dart';
 import 'package:customclaimsapp/services/auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -20,6 +21,7 @@ class _AuthWidgetBuilderState extends State<AuthWidgetBuilder> {
   void initState() {
 //    authService = Provider.of<AuthService>(context);
 //    getUser = authService.getCurrentUser();
+    print('init state of AuthWidgetBuilder is fired');
 
     super.initState();
   }
@@ -45,7 +47,7 @@ class _AuthWidgetBuilderState extends State<AuthWidgetBuilder> {
               child: MainAdminPage(),
             );
           }
-          return SignInPage();
+          return AuthPage();
         }
         return Scaffold(
           body: Center(

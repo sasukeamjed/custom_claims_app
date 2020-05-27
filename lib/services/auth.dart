@@ -62,7 +62,7 @@ class AuthService extends ChangeNotifier{
     }).catchError((e) {
       print(e);
     });
-    notifyListeners();
+
   }
 
 

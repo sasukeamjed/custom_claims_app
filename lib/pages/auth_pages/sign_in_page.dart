@@ -3,12 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:customclaimsapp/services/auth.dart';
 
-
 class SignInPage extends StatelessWidget {
-
   TextEditingController textEmail = TextEditingController();
   TextEditingController textPassword = TextEditingController();
-
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +13,6 @@ class SignInPage extends StatelessWidget {
     AuthService _auth = Provider.of<AuthService>(context);
     return Scaffold(
       appBar: AppBar(
-
         title: Text('Custom Claim'),
       ),
       body: Center(
@@ -27,9 +23,7 @@ class SignInPage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 TextField(
-                  decoration: InputDecoration(
-                      hintText: 'Email'
-                  ),
+                  decoration: InputDecoration(hintText: 'Email'),
                   controller: textEmail,
                 ),
                 SizedBox(
@@ -37,9 +31,7 @@ class SignInPage extends StatelessWidget {
                 ),
                 TextField(
                   controller: textPassword,
-                  decoration: InputDecoration(
-                      hintText: 'Password'
-                  ),
+                  decoration: InputDecoration(hintText: 'Password'),
                 ),
                 SizedBox(
                   height: 20,
@@ -49,11 +41,13 @@ class SignInPage extends StatelessWidget {
                   children: <Widget>[
                     RaisedButton(
                       child: Text('Login'),
-                      onPressed: () async{
+                      onPressed: () async {
                         await _auth.login(textEmail.text, textPassword.text);
                       },
                     ),
-                    SizedBox(height: 10,),
+                    SizedBox(
+                      height: 10,
+                    ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
@@ -66,18 +60,22 @@ class SignInPage extends StatelessWidget {
                           ),
                         ),
                         GestureDetector(
-                          onTap: (){
-                            Navigator.pushReplacement(context, MaterialPageRoute(
-                              builder: (context)=> SignUpPage(),
-                            ),);
+                          onTap: () {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => SignUpPage(),
+                              ),
+                            );
                           },
                           child: Text(
                             "Sign Up",
                             style: TextStyle(
-                                color: Colors.blue,
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                decoration: TextDecoration.underline),
+                              color: Colors.blue,
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              decoration: TextDecoration.underline,
+                            ),
                           ),
                         ),
                       ],

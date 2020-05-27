@@ -1,5 +1,7 @@
 import 'package:customclaimsapp/auth_widget.dart';
 import 'package:customclaimsapp/auth_widget_builder.dart';
+import 'package:customclaimsapp/pages/auth_pages/sign_in_page.dart';
+import 'package:customclaimsapp/pages/auth_pages/sign_up_page.dart';
 import 'package:customclaimsapp/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -18,6 +20,10 @@ class MyApp extends StatelessWidget {
         ),
       ],
       child: MaterialApp(
+        routes: <String, WidgetBuilder>{
+          '/login_screen': (BuildContext context) => SignInPage(),
+          '/signup_screen': (BuildContext context)=> SignUpPage(),
+        },
         home: AuthWidgetBuilder(),
       ),
     );
