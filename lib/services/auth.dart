@@ -1,5 +1,9 @@
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:customclaimsapp/models/shop_model.dart';
 import 'package:customclaimsapp/models/users/main_user.dart';
+import 'package:customclaimsapp/models/users/secondery_users/admin_model.dart';
+import 'package:customclaimsapp/models/users/secondery_users/shop_owner_model.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
@@ -27,6 +31,14 @@ class AuthService extends ChangeNotifier{
     IdTokenResult idTokenResult = await user.getIdToken();
     print('getCurrentUser: ${idTokenResult.claims}');
     Map claims = idTokenResult.claims;
+    if(claims['claim'] == 'admin'){
+      currentUser = Admin(uid: user.uid, email: user.email, claim: claims['claim'], token: idTokenResult.token, phoneNumber: user.phoneNumber);
+      return;
+    }
+    else if(claims['claim'] == 'shop'){
+      currentUser = ShopOwner(uid: user.uid, email: user.email, claim: claims['claim'], token: idTokenResult.token, phoneNumber: user.phoneNumber);
+      return;
+    }
     currentUser = MainUser(uid: user.uid, email: user.email, claim: claims['claim'], token: idTokenResult.token);
   }
 

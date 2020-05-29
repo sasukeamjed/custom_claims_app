@@ -5,6 +5,6 @@ class Admin extends MainUser {
 
   final String phoneNumber;
 
-  Admin({@required uid, @required email, @required claim, @required this.phoneNumber}) : super(uid: uid, email: email,);
+  Admin({@required uid, @required email, @required claim, @required this.phoneNumber, token}) : super(uid: uid, email: email, token: token);
 
 }
