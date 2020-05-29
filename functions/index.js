@@ -61,7 +61,6 @@ const addAdmin = async (email, phoneNumber, fullName) => {
     phoneNumber: '+968' + phoneNumber,
     emailVerified: false,
     password: '123456',
-    photoURL: shopImageUrl,
     disabled: false
     }).then(async (newUser) => {
 

@@ -44,7 +44,7 @@ class _AuthWidgetBuilderState extends State<AuthWidgetBuilder> {
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           if (authService.currentUser != null) {
-            print(authService.currentUser.claim);
+            print('This is the claim: ${authService.currentUser.claim}');
             return Provider.value(
               value: authService.currentUser,
               child: redirect(authService.currentUser.claim),

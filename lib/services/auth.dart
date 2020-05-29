@@ -7,6 +7,7 @@ import 'package:customclaimsapp/models/users/secondery_users/shop_owner_model.da
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AuthService extends ChangeNotifier{
 
@@ -29,14 +30,17 @@ class AuthService extends ChangeNotifier{
   Future<void> getCurrentUser() async{
     var user = await _auth.currentUser();
     IdTokenResult idTokenResult = await user.getIdToken();
-    print('getCurrentUser: ${idTokenResult.claims}');
+    print('AuthService getCurrentUser 32 : ${idTokenResult.claims}');
     Map claims = idTokenResult.claims;
     if(claims['claim'] == 'admin'){
       currentUser = Admin(uid: user.uid, email: user.email, claim: claims['claim'], token: idTokenResult.token, phoneNumber: user.phoneNumber);
       return;
     }
     else if(claims['claim'] == 'shop'){
-      currentUser = ShopOwner(uid: user.uid, email: user.email, claim: claims['claim'], token: idTokenResult.token, phoneNumber: user.phoneNumber);
+      DocumentReference doc = Firestore.instance.collection('Shops').document(user.displayName);
+      print('This is the document refrence for AuthService 41 $doc');
+      currentUser = ShopOwner(uid: user.uid, shopName: user.displayName, email: user.email, claim: claims['claim'], token: idTokenResult.token, phoneNumber: user.phoneNumber,);
+      print(user.displayName);
       return;
     }
     currentUser = MainUser(uid: user.uid, email: user.email, claim: claims['claim'], token: idTokenResult.token);
