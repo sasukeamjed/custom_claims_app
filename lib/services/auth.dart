@@ -2,6 +2,7 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:customclaimsapp/models/shop_model.dart';
 import 'package:customclaimsapp/models/users/main_user.dart';
 import 'package:customclaimsapp/models/users/secondery_users/admin_model.dart';
+import 'package:customclaimsapp/models/users/secondery_users/customer_model.dart';
 import 'package:customclaimsapp/models/users/secondery_users/shop_owner_model.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -13,7 +14,9 @@ class AuthService extends ChangeNotifier{
 
   bool fetchingData = false;
 
-  MainUser currentUser;
+  ShopOwner shopOwner;
+  Admin admin;
+  Customer customer;
 
 
   FirebaseAuth _auth = FirebaseAuth.instance;
@@ -27,23 +30,21 @@ class AuthService extends ChangeNotifier{
     }
   }
 
-  Future<void> getCurrentUser() async{
+  Future<dynamic> getCurrentUser() async{
     var user = await _auth.currentUser();
     IdTokenResult idTokenResult = await user.getIdToken();
     print('AuthService getCurrentUser 32 : ${idTokenResult.claims}');
     Map claims = idTokenResult.claims;
     if(claims['claim'] == 'admin'){
-      currentUser = Admin(uid: user.uid, email: user.email, claim: claims['claim'], token: idTokenResult.token, phoneNumber: user.phoneNumber);
-      return;
+      return admin = Admin(uid: user.uid, email: user.email, claim: claims['claim'], token: idTokenResult.token, phoneNumber: user.phoneNumber);
     }
     else if(claims['claim'] == 'shop'){
-      DocumentReference doc = Firestore.instance.collection('Shops').document(user.displayName);
-      print('This is the document refrence for AuthService 41 $doc');
-      currentUser = ShopOwner(uid: user.uid, shopName: user.displayName, email: user.email, claim: claims['claim'], token: idTokenResult.token, phoneNumber: user.phoneNumber,);
-      print(user.displayName);
-      return;
+      DocumentSnapshot doc = await Firestore.instance.collection('Shops').document(user.displayName).get();
+      String shopOwnerName = doc.data['shopOwnerName'];
+      print(shopOwnerName);
+      return shopOwner = ShopOwner(uid: user.uid, shopName: user.displayName, email: user.email, claim: claims['claim'], token: idTokenResult.token, phoneNumber: user.phoneNumber, shopOwnerName: shopOwnerName);
     }
-    currentUser = MainUser(uid: user.uid, email: user.email, claim: claims['claim'], token: idTokenResult.token);
+    return customer = Customer(uid: user.uid, email: user.email, claim: claims['claim'], phoneNumber: user.phoneNumber);
   }
 
 
@@ -85,7 +86,9 @@ class AuthService extends ChangeNotifier{
 
   Future<void> logout() async{
     await _auth.signOut();
-    currentUser = null;
+    admin = null;
+    shopOwner = null;
+    customer = null;
     notifyListeners();
   }
 }

@@ -1,10 +1,15 @@
 import 'package:customclaimsapp/models/users/main_user.dart';
 import 'package:flutter/cupertino.dart';
 
-class Admin extends MainUser {
+@immutable
 
+class Admin {
+  final String uid;
+  final String email;
+  final String claim;
+  final token;
   final String phoneNumber;
 
-  Admin({@required uid, @required email, @required claim, @required this.phoneNumber, token}) : super(uid: uid, email: email, claim: claim,token: token);
+  Admin({@required this.uid, @required this.email, @required this.claim, @required this.phoneNumber, this.token});
 
 }

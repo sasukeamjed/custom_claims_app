@@ -1,5 +1,6 @@
 import 'package:customclaimsapp/auth_widget.dart';
 import 'package:customclaimsapp/models/users/main_user.dart';
+import 'package:customclaimsapp/models/users/secondery_users/shop_owner_model.dart';
 import 'package:customclaimsapp/pages/admin_pages/main_admin_page.dart';
 import 'package:customclaimsapp/pages/auth_pages/auth_page.dart';
 import 'package:customclaimsapp/services/auth.dart';
@@ -43,14 +44,18 @@ class _AuthWidgetBuilderState extends State<AuthWidgetBuilder> {
       future: getUser,
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
-          if (authService.currentUser != null) {
-            print('This is the claim: ${authService.currentUser.claim}');
-            return Provider.value(
-              value: authService.currentUser,
-              child: redirect(authService.currentUser.claim),
-            );
-          }
-          return AuthPage();
+          print(Ty == ShopOwner);
+          return Center(
+            child: Text('done'),
+          );
+//          if (authService.currentUser != null) {
+//            print('This is the claim: ${authService.currentUser.claim}');
+//            return Provider<MainUser>.value(
+//              value: authService.currentUser,
+//              child: redirect(authService.currentUser.claim),
+//            );
+//          }
+//          return AuthPage();
         }
         return Scaffold(
           body: Center(

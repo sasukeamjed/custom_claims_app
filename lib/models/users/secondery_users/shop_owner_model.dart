@@ -4,22 +4,25 @@ import 'package:flutter/cupertino.dart';
 
 //ToDo: Create the add shop function
 
-class ShopOwner extends MainUser {
+class ShopOwner{
+  final String uid;
+  final String email;
+  final String claim;
+  final String token;
   final String shopName;
-//  final String shopOwnerName;
+  final String shopOwnerName;
   final String phoneNumber;
 //  final String shopLocation;
 //  final Shop shop;
 
   ShopOwner(
-      {@required uid,
+      {@required this.uid,
       @required this.shopName,
-//      @required this.shopOwnerName,
-      @required email,
-      @required claim,
+      @required this.shopOwnerName,
+      @required this.email,
+      @required this.claim,
       @required this.phoneNumber,
 //      @required this.shopLocation,
 //      @required this.shop,
-      token,})
-      : super(uid: uid, email: email, claim: claim,token: token);
+      this.token,});
 }
