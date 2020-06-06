@@ -14,9 +14,9 @@ class AuthService extends ChangeNotifier{
 
   bool fetchingData = false;
 
-  ShopOwner shopOwner;
-  Admin admin;
-  Customer customer;
+  ShopOwner _shopOwner;
+  Admin _admin;
+  Customer _customer;
 
 
   FirebaseAuth _auth = FirebaseAuth.instance;
@@ -36,15 +36,15 @@ class AuthService extends ChangeNotifier{
     print('AuthService getCurrentUser 32 : ${idTokenResult.claims}');
     Map claims = idTokenResult.claims;
     if(claims['claim'] == 'admin'){
-      return admin = Admin(uid: user.uid, email: user.email, claim: claims['claim'], token: idTokenResult.token, phoneNumber: user.phoneNumber);
+      return _admin = Admin(uid: user.uid, email: user.email, claim: claims['claim'], token: idTokenResult.token, phoneNumber: user.phoneNumber);
     }
     else if(claims['claim'] == 'shop'){
       DocumentSnapshot doc = await Firestore.instance.collection('Shops').document(user.displayName).get();
       String shopOwnerName = doc.data['shopOwnerName'];
       print(shopOwnerName);
-      return shopOwner = ShopOwner(uid: user.uid, shopName: user.displayName, email: user.email, claim: claims['claim'], token: idTokenResult.token, phoneNumber: user.phoneNumber, shopOwnerName: shopOwnerName);
+      return _shopOwner = ShopOwner(uid: user.uid, shopName: user.displayName, email: user.email, claim: claims['claim'], token: idTokenResult.token, phoneNumber: user.phoneNumber, shopOwnerName: shopOwnerName);
     }
-    return customer = Customer(uid: user.uid, email: user.email, claim: claims['claim'], phoneNumber: user.phoneNumber);
+    return _customer = Customer(uid: user.uid, email: user.email, claim: claims['claim'], phoneNumber: user.phoneNumber);
   }
 
 
@@ -86,9 +86,9 @@ class AuthService extends ChangeNotifier{
 
   Future<void> logout() async{
     await _auth.signOut();
-    admin = null;
-    shopOwner = null;
-    customer = null;
+    _admin = null;
+    _shopOwner = null;
+    _customer = null;
     notifyListeners();
   }
 }

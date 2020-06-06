@@ -1,5 +1,9 @@
+
+
 import 'package:customclaimsapp/auth_widget.dart';
 import 'package:customclaimsapp/models/users/main_user.dart';
+import 'package:customclaimsapp/models/users/secondery_users/admin_model.dart';
+import 'package:customclaimsapp/models/users/secondery_users/customer_model.dart';
 import 'package:customclaimsapp/models/users/secondery_users/shop_owner_model.dart';
 import 'package:customclaimsapp/pages/admin_pages/main_admin_page.dart';
 import 'package:customclaimsapp/pages/auth_pages/auth_page.dart';
@@ -44,18 +48,27 @@ class _AuthWidgetBuilderState extends State<AuthWidgetBuilder> {
       future: getUser,
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
-          print(Ty == ShopOwner);
-          return Center(
-            child: Text('done'),
-          );
-//          if (authService.currentUser != null) {
-//            print('This is the claim: ${authService.currentUser.claim}');
-//            return Provider<MainUser>.value(
-//              value: authService.currentUser,
-//              child: redirect(authService.currentUser.claim),
-//            );
-//          }
-//          return AuthPage();
+          print(snapshot.data is ShopOwner);
+          if (snapshot.data != null) {
+            print('This is the claim: ${snapshot.data.claim}');
+            if(snapshot.data is Admin){
+              return Provider<Admin>.value(
+                value: snapshot.data,
+                child: redirect(snapshot.data.claim),
+              );
+            }else if(snapshot.data is ShopOwner){
+              return Provider<ShopOwner>.value(
+                value: snapshot.data,
+                child: redirect(snapshot.data.claim),
+              );
+            }else{
+              return Provider<Customer>.value(
+                value: snapshot.data,
+                child: redirect(snapshot.data.claim),
+              );
+            }
+          }
+          return AuthPage();
         }
         return Scaffold(
           body: Center(
