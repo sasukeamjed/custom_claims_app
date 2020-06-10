@@ -1,9 +1,8 @@
 import 'package:cloud_functions/cloud_functions.dart';
-import 'package:customclaimsapp/models/shop_model.dart';
-import 'package:customclaimsapp/models/users/main_user.dart';
 import 'package:customclaimsapp/models/users/secondery_users/admin_model.dart';
 import 'package:customclaimsapp/models/users/secondery_users/customer_model.dart';
 import 'package:customclaimsapp/models/users/secondery_users/shop_owner_model.dart';
+import 'package:customclaimsapp/services/shop_owner_services.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -41,7 +40,8 @@ class AuthService extends ChangeNotifier{
     else if(claims['claim'] == 'shop'){
       DocumentSnapshot doc = await Firestore.instance.collection('Shops').document(user.displayName).get();
       String shopOwnerName = doc.data['shopOwnerName'];
-      print(shopOwnerName);
+      ShopOwnerServices shopServices = ShopOwnerServices();
+      await shopServices.fetchAllProducts(shopName: user.displayName);
       return _shopOwner = ShopOwner(uid: user.uid, shopName: user.displayName, email: user.email, claim: claims['claim'], token: idTokenResult.token, phoneNumber: user.phoneNumber, shopOwnerName: shopOwnerName);
     }
     return _customer = Customer(uid: user.uid, email: user.email, claim: claims['claim'], phoneNumber: user.phoneNumber);

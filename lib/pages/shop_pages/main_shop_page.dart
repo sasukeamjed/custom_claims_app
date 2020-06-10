@@ -45,6 +45,11 @@ class MainShopPage extends StatelessWidget {
                   title: Text('Shop Phone Number'),
                   subtitle: Text(shop.phoneNumber),
                 ),
+                ListTile(
+                  title: Text('Products Numbers'),
+                  subtitle: Text('0'),
+                  trailing: Icon(Icons.keyboard_arrow_right),
+                ),
               ],
             );
           },

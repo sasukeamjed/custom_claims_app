@@ -1,4 +1,4 @@
-import 'package:customclaimsapp/models/shop_model.dart';
+import 'package:customclaimsapp/models/product_model.dart';
 import 'package:customclaimsapp/models/users/main_user.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -12,6 +12,7 @@ class ShopOwner{
   final String shopName;
   final String shopOwnerName;
   final String phoneNumber;
+//  final List<Product> products;
 //  final String shopLocation;
 //  final Shop shop;
 
@@ -24,5 +25,6 @@ class ShopOwner{
       @required this.phoneNumber,
 //      @required this.shopLocation,
 //      @required this.shop,
+//      @required this.products,
       this.token,});
 }

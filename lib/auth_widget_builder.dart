@@ -27,10 +27,6 @@ class _AuthWidgetBuilderState extends State<AuthWidgetBuilder> {
 
   @override
   void initState() {
-//    authService = Provider.of<AuthService>(context);
-//    getUser = authService.getCurrentUser();
-    print('init state of AuthWidgetBuilder is fired');
-
     super.initState();
   }
 
@@ -48,9 +44,7 @@ class _AuthWidgetBuilderState extends State<AuthWidgetBuilder> {
       future: getUser,
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
-          print(snapshot.data is ShopOwner);
           if (snapshot.data != null) {
-            print('This is the claim: ${snapshot.data.claim}');
             if(snapshot.data is Admin){
               return Provider<Admin>.value(
                 value: snapshot.data,

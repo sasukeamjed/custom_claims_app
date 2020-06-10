@@ -1,3 +1,4 @@
+import 'package:customclaimsapp/services/shop_owner_services.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -59,27 +60,66 @@ class _AddProductPageState extends State<AddProductPage> {
     if (!mounted) return;
 
     setState(() {
+      if (resultList == null) {
+        images = [];
+        return;
+      }
       images = resultList;
       if (error == null) _error = 'No Error Dectected';
     });
   }
 
+  TextEditingController _productNameController = TextEditingController();
+  TextEditingController _productPriceController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
+    final services = Provider.of<ShopOwnerServices>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text('Add Product'),
       ),
       body: ListView(
+        padding: EdgeInsets.symmetric(horizontal: 32),
         children: <Widget>[
           Container(
             height: 300,
             width: 300,
             child: buildGridView(),
           ),
+          SizedBox(
+            height: 25.0,
+          ),
           RaisedButton(
             child: Text('Pick Product Images'),
             onPressed: loadAssets,
+          ),
+          SizedBox(
+            height: 25.0,
+          ),
+          TextField(
+            controller: _productNameController,
+            decoration: InputDecoration(
+              hintText: 'Product Name',
+            ),
+          ),
+          SizedBox(
+            height: 25.0,
+          ),
+          TextField(
+            controller: _productPriceController,
+            decoration: InputDecoration(
+              hintText: 'Product Price',
+            ),
+          ),
+          SizedBox(
+            height: 25.0,
+          ),
+          RaisedButton(
+            child: Text('Add The Product To Firebase'),
+            onPressed: (){
+              services.addProduct(shopName: widget.shopName, productName: _productNameController.text, price: double.parse(_productPriceController.text), assets: images);
+            },
           ),
         ],
       ),
