@@ -1,6 +1,7 @@
 import 'package:customclaimsapp/models/users/main_user.dart';
 import 'package:customclaimsapp/models/users/secondery_users/shop_owner_model.dart';
 import 'package:customclaimsapp/pages/shop_pages/add_product_page.dart';
+import 'package:customclaimsapp/pages/shop_pages/products_page.dart';
 import 'package:customclaimsapp/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -47,8 +48,11 @@ class MainShopPage extends StatelessWidget {
                 ),
                 ListTile(
                   title: Text('Products Numbers'),
-                  subtitle: Text('0'),
+                  subtitle: Text(shop.products.length.toString()),
                   trailing: Icon(Icons.keyboard_arrow_right),
+                  onTap: (){
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=> ProductsPage(products: shop.products,)));
+                  },
                 ),
               ],
             );

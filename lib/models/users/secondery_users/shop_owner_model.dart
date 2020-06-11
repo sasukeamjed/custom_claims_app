@@ -12,7 +12,7 @@ class ShopOwner{
   final String shopName;
   final String shopOwnerName;
   final String phoneNumber;
-//  final List<Product> products;
+  final List<Product> products;
 //  final String shopLocation;
 //  final Shop shop;
 
@@ -25,6 +25,6 @@ class ShopOwner{
       @required this.phoneNumber,
 //      @required this.shopLocation,
 //      @required this.shop,
-//      @required this.products,
+      @required this.products,
       this.token,});
 }

@@ -45,11 +45,9 @@ class ShopOwnerServices extends ChangeNotifier {
       QuerySnapshot docs = await Firestore.instance.collection('Shops')?.document(shopName)?.collection('Products')?.getDocuments();
       //ToDo: fetch all products
       docs.documents.forEach((element) {
-        products.add(Product(uid: element.documentID, productName: element.data['productName'], productPrice: element.data['price'], urls: element.data['imagesUrls'].toString()));
+        products.add(Product(uid: element.documentID, productName: element.data['productName'], productPrice: element.data['price'], urls: element.data['imagesUrls'].cast<String>().toList()));
       });
-      products.forEach((element) {
-        print(element.uid);
-      });
+      return products;
     } catch (e) {
       print('shop_owner_services 55 => $e');
     }
