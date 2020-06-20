@@ -34,7 +34,7 @@ class ShopOwnerServices extends ChangeNotifier {
         });
       }
     } catch (e) {
-      print('data_managment.dart 95: $e');
+      print('data_managment.dart 37: $e');
     }
   }
 
