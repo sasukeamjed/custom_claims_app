@@ -54,14 +54,22 @@ class ProductEditPage extends StatelessWidget {
             bottom: 0,
             child: GestureDetector(
               child: Icon(Icons.delete),
-              onTap: () {
+              onTap: ()async {
                 print(url);
-                print(firebaseStorage.storageBucket);
+                String path = await firebaseStorage.ref().getBucket();
+                getImageName(url);
               },
             ),
           ),
         ],
       ),
     );
+  }
+  
+  getImageName(String url){
+    String withoutSlashes = url.replaceAll('/', ' ');
+    String withoutFs = withoutSlashes.replaceAll('%2F', ' ');
+    String last = withoutFs.replaceAll('%20', ' ');
+    print(last);
   }
 }

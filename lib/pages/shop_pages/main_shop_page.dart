@@ -10,6 +10,7 @@ class MainShopPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('Main shop page is build');
     final _auth = Provider.of<AuthService>(context);
     final shop = Provider.of<ShopOwner>(context);
     return Scaffold(

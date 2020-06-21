@@ -18,7 +18,7 @@ class ShopOwnerServices extends ChangeNotifier {
         'can not accept a null value');
 
     try {
-      List<String> imagesUrls = await _uploadImages(assets);
+      List<String> imagesUrls = await _uploadImages(assets, shopName, productName);
 
       DocumentSnapshot shopDocument =
           await Firestore.instance.collection('Shops').document(shopName).get();
@@ -53,14 +53,14 @@ class ShopOwnerServices extends ChangeNotifier {
     }
   }
 
-  Future<List<String>> _uploadImages(List<Asset> assets) async {
+  Future<List<String>> _uploadImages(List<Asset> assets, String shopName, String productName) async {
     print('Uploading Images');
     List<String> urls = [];
     await Future.forEach(assets, (asset) async {
       try {
         ByteData byteData = await asset.requestOriginal();
         List<int> imageData = byteData.buffer.asUint8List();
-        StorageReference ref = FirebaseStorage.instance.ref().child(asset.name);
+        StorageReference ref = FirebaseStorage.instance.ref().child('shops/$shopName/$productName/${asset.name}');
         StorageUploadTask uploadTask = ref.putData(imageData);
 
         String url = await (await uploadTask.onComplete).ref.getDownloadURL();
