@@ -30,6 +30,7 @@ dependencies:
   multi_image_picker:
   image_picker: ^0.6.6+1
   cloud_firestore:
+  equatable: ^1.2.0
 
 dev_dependencies:
   flutter_test:

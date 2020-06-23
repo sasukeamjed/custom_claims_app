@@ -8,11 +8,8 @@ class ProductsPage extends StatelessWidget {
 
   ProductsPage({Key key, this.products}) : super(key: key);
 
-  UniqueKey uniqueKey = UniqueKey();
-
   @override
   Widget build(BuildContext context) {
-    print(uniqueKey);
     return Scaffold(
       appBar: AppBar(
         title: Text('Shop Products'),
@@ -20,7 +17,7 @@ class ProductsPage extends StatelessWidget {
       body: GridView.builder(
         itemCount: products.length,
         gridDelegate:
-            SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+        SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
         itemBuilder: (BuildContext context, int index) {
           return Card(
             child: Stack(
@@ -52,9 +49,10 @@ class ProductsPage extends StatelessWidget {
                 Align(
                   child: IconButton(
                     icon: Icon(Icons.edit),
-                    onPressed: (){
+                    onPressed: () {
                       Navigator.pushReplacement(context, MaterialPageRoute(
-                        builder: (context) => ProductEditPage(product: products[index],),
+                        builder: (context) =>
+                            ProductEditPage(product: products[index],),
                       ));
                     },
                   ),
@@ -67,79 +65,5 @@ class ProductsPage extends StatelessWidget {
       ),
     );
   }
-
-
-
-//  Widget vericRow(){
-//    return Column(
-//      mainAxisAlignment: MainAxisAlignment.center,
-//      children: <Widget>[
-//        Expanded(
-//          child: Image.network(
-//            p.urls[0],
-//          ),
-//        ),
-//        SizedBox(
-//          height: 10,
-//        ),
-//        Text(p.productName),
-//        SizedBox(
-//          height: 10,
-//        ),
-//        Row(
-//          children: <Widget>[
-//            Align(
-//              child: Text(p.productPrice.toString()),
-//              alignment: Alignment.center,
-//            ),
-//          ],
-//        ),
-//        SizedBox(
-//          height: 10,
-//        ),
-//      ],
-//    );
-//  }
 }
 
-//products
-//    .map(
-//(p) => Card(
-//child: Stack(
-//children: <Widget>[
-//Column(
-//mainAxisAlignment: MainAxisAlignment.center,
-//children: <Widget>[
-//Expanded(
-//child: Image.network(
-//p.urls[0],
-//),
-//),
-//SizedBox(
-//height: 10,
-//),
-//Text(p.productName),
-//SizedBox(
-//height: 10,
-//),
-//Align(
-//child: Text(p.productPrice.toString()),
-//alignment: Alignment.center,
-//),
-//SizedBox(
-//height: 10,
-//),
-//],
-//),
-//Align(
-//child: IconButton(
-//icon: Icon(Icons.edit),
-//onPressed: (){},
-//),
-//alignment: Alignment.bottomLeft,
-//),
-//],
-//),
-//),
-//)
-//    .toList(),

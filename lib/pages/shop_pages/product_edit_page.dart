@@ -1,6 +1,8 @@
 import 'package:customclaimsapp/models/product_model.dart';
+import 'package:customclaimsapp/services/shop_owner_services.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class ProductEditPage extends StatelessWidget {
   final Product product;
@@ -10,6 +12,7 @@ class ProductEditPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('product edit page is rebuild');
     return Scaffold(
       appBar: AppBar(
         title: Text('Product Edit Page'),
@@ -18,11 +21,18 @@ class ProductEditPage extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 30),
         child: ListView(
           children: <Widget>[
-            GridView(
-              shrinkWrap: true,
-              gridDelegate:
-                  SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
-              children: product.urls.map((e) => image(e)).toList(),
+            Container(
+              height: 300,
+              width: 200,
+              child: GridView.builder(
+                itemCount: product.urls.length,
+                shrinkWrap: true,
+                gridDelegate:
+                    SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+                itemBuilder: (context, index){
+                  return image(product.urls[index], context);
+                },
+              ),
             ),
             SizedBox(
               height: 16,
@@ -43,33 +53,29 @@ class ProductEditPage extends StatelessWidget {
     );
   }
 
-  Widget image(String url) {
+  Widget image(String url, BuildContext context) {
     FirebaseStorage firebaseStorage = FirebaseStorage.instance;
-
+    final services = Provider.of<ShopOwnerServices>(context);
     return Center(
-      child: Stack(
-        children: <Widget>[
-          Image.network(url),
-          Positioned(
-            bottom: 0,
-            child: GestureDetector(
-              child: Icon(Icons.delete),
-              onTap: ()async {
-                print(url);
-                String path = await firebaseStorage.ref().getBucket();
-                getImageName(url);
-              },
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Stack(
+          children: <Widget>[
+            Image.network(url),
+            Positioned(
+              bottom: 0,
+              child: GestureDetector(
+                child: Icon(Icons.delete),
+                onTap: ()async {
+                  services.deleteImageFromProduct('fish', product, url);
+//
+                },
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
-  
-  getImageName(String url){
-    String withoutSlashes = url.replaceAll('/', ' ');
-    String withoutFs = withoutSlashes.replaceAll('%2F', ' ');
-    String last = withoutFs.replaceAll('%20', ' ');
-    print(last);
-  }
+
 }
