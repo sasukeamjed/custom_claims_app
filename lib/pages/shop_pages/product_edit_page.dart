@@ -2,17 +2,72 @@ import 'package:customclaimsapp/models/product_model.dart';
 import 'package:customclaimsapp/services/shop_owner_services.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:multi_image_picker/multi_image_picker.dart';
 import 'package:provider/provider.dart';
 
-class ProductEditPage extends StatelessWidget {
+class ProductEditPage extends StatefulWidget {
   final Product product;
 
   const ProductEditPage({Key key, @required this.product}) : super(key: key);
 
+  @override
+  _ProductEditPageState createState() => _ProductEditPageState();
+}
+
+class _ProductEditPageState extends State<ProductEditPage> {
+
+  List<Asset> images = List<Asset>();
+  String _error;
+
+  Widget buildGridView() {
+    return GridView.count(
+      crossAxisCount: 3,
+      children: List.generate(images.length, (index) {
+        Asset asset = images[index];
+        return AssetThumb(
+          asset: asset,
+          width: 300,
+          height: 300,
+        );
+      }),
+    );
+  }
+
+  Future<void> loadAssets() async {
+    setState(() {
+      images = List<Asset>();
+    });
+
+    List<Asset> resultList;
+    String error;
+
+    try {
+      resultList = await MultiImagePicker.pickImages(
+        maxImages: 5,
+      );
+    } on Exception catch (e) {
+      error = e.toString();
+    }
+
+    // If the widget was removed from the tree while the asynchronous platform
+    // message was in flight, we want to discard the reply rather than calling
+    // setState to update our non-existent appearance.
+    if (!mounted) return;
+
+    setState(() {
+      if (resultList == null) {
+        images = [];
+        return;
+      }
+      images = resultList;
+      if (error == null) _error = 'No Error Dectected';
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     print('product edit page is rebuild');
+    print(widget.product.urls.length);
     return Scaffold(
       appBar: AppBar(
         title: Text('Product Edit Page'),
@@ -25,27 +80,38 @@ class ProductEditPage extends StatelessWidget {
               height: 300,
               width: 200,
               child: GridView.builder(
-                itemCount: product.urls.length,
+                itemCount: widget.product.urls.length + images.length,
                 shrinkWrap: true,
                 gridDelegate:
                     SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
                 itemBuilder: (context, index){
-                  return image(product.urls[index], context);
+                  return image(widget.product.urls[index], context);
                 },
               ),
             ),
             SizedBox(
               height: 16,
             ),
+            RaisedButton(
+              child: Text('Pick Images'),
+              onPressed: (){},
+            ),
+            SizedBox(
+              height: 16,
+            ),
             TextField(
-              controller: TextEditingController()..text = product.productName,
+              controller: TextEditingController()..text = widget.product.productName,
             ),
             SizedBox(
               height: 16,
             ),
             TextField(
               controller: TextEditingController()
-                ..text = product.productPrice.toString(),
+                ..text = widget.product.productPrice.toString(),
+            ),
+            RaisedButton(
+              child: Text('Update Product'),
+              onPressed: (){},
             ),
           ],
         ),
@@ -67,8 +133,11 @@ class ProductEditPage extends StatelessWidget {
               child: GestureDetector(
                 child: Icon(Icons.delete),
                 onTap: ()async {
-                  services.deleteImageFromProduct('fish', product, url);
-//
+                  await services.deleteImageFromProduct('fish', widget.product, url);
+                  setState(() {
+
+                  });
+
                 },
               ),
             ),
@@ -77,5 +146,4 @@ class ProductEditPage extends StatelessWidget {
       ),
     );
   }
-
 }

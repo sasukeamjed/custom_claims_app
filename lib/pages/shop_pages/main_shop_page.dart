@@ -52,7 +52,7 @@ class MainShopPage extends StatelessWidget {
                   subtitle: Text(shop.products.length.toString()),
                   trailing: Icon(Icons.keyboard_arrow_right),
                   onTap: (){
-                    Navigator.push(context, MaterialPageRoute(builder: (context)=> ProductsPage(products: shop.products,)));
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=> ProductsPage(shop: shop,)));
                   },
                 ),
               ],

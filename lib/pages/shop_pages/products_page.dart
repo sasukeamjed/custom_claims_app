@@ -1,12 +1,13 @@
 import 'package:customclaimsapp/models/product_model.dart';
+import 'package:customclaimsapp/models/users/secondery_users/shop_owner_model.dart';
 import 'package:customclaimsapp/pages/shop_pages/product_edit_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class ProductsPage extends StatelessWidget {
-  final List<Product> products;
+  final ShopOwner shop;
 
-  ProductsPage({Key key, this.products}) : super(key: key);
+  ProductsPage({Key key, this.shop}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +16,7 @@ class ProductsPage extends StatelessWidget {
         title: Text('Shop Products'),
       ),
       body: GridView.builder(
-        itemCount: products.length,
+        itemCount: shop.products.length,
         gridDelegate:
         SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
         itemBuilder: (BuildContext context, int index) {
@@ -26,19 +27,19 @@ class ProductsPage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Expanded(
-                      child: Image.network(
-                        products[index].urls[0],
+                      child: shop.products[index].urls.isEmpty ? Image.asset('assets/shop.png') : Image.network(
+                        shop.products[index].urls[0],
                       ),
                     ),
                     SizedBox(
                       height: 10,
                     ),
-                    Text(products[index].productName),
+                    Text(shop.products[index].productName),
                     SizedBox(
                       height: 10,
                     ),
                     Align(
-                      child: Text(products[index].productPrice.toString()),
+                      child: Text(shop.products[index].productPrice.toString()),
                       alignment: Alignment.center,
                     ),
                     SizedBox(
@@ -52,7 +53,7 @@ class ProductsPage extends StatelessWidget {
                     onPressed: () {
                       Navigator.pushReplacement(context, MaterialPageRoute(
                         builder: (context) =>
-                            ProductEditPage(product: products[index],),
+                            ProductEditPage(product: shop.products[index],),
                       ));
                     },
                   ),

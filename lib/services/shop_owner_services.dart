@@ -56,51 +56,48 @@ class ShopOwnerServices extends ChangeNotifier {
 
   Future<void> deleteImageFromProduct(String shopName, Product product, String imgUrl) async{
 
-    try{
-      DocumentSnapshot doc = await Firestore.instance.collection('Shops').document('shop name').collection('Products').document(product.uid).get();
-      Product updatedProduct = Product(uid: doc.documentID, productName: doc.data['productName'], productPrice: doc.data['price'], urls: doc.data['imagesUrls'].cast<String>().toList());
-
-      print('Orginal Product product uid : ${product.uid}, product name: ${product.productName}, product price ${product.productPrice}, product urls: ${product.urls}');
-      print('Fetched Product product uid : ${updatedProduct.uid}, product name: ${updatedProduct.productName}, product price ${updatedProduct.productPrice}, product urls: ${updatedProduct.urls}');
+    if(product.urls.remove(imgUrl)){
 
 
-      //ToDo: delete the image from the firebase storage
-      FirebaseStorage firebaseStorage = FirebaseStorage.instance;
-      StorageReference ref = await firebaseStorage.getReferenceFromUrl(imgUrl);
-      await ref.delete();
-      print('img was deleted from firebase storage');
+      try{
+        DocumentSnapshot doc = await Firestore.instance.collection('Shops').document('shop name').collection('Products').document(product.uid).get();
+        Product updatedProduct = Product(uid: doc.documentID, productName: doc.data['productName'], productPrice: doc.data['price'], urls: doc.data['imagesUrls'].cast<String>().toList());
 
-      //ToDo: delete the image url from firebase database
-      updatedProduct.urls.forEach((element) async{
-
-        if(updatedProduct.urls.remove(element)){
-          await doc.reference.setData({
-            'productName': updatedProduct.productName,
-            'price': updatedProduct.productPrice,
-            'imagesUrls': updatedProduct.urls,
-          });
-          print('shop_owner_services file line 82: the url was removed successfuly from the class and the database');
-        }else{
-          print('error in shop_owner_services file line 84: there is not image with this url');
-        }
-        print(element);
-        print(imgUrl);
-        print(imgUrl == element);
-      });
+        print('Orginal Product product uid : ${product.uid}, product name: ${product.productName}, product price ${product.productPrice}, product urls: ${product.urls}');
+        print('Fetched Product product uid : ${updatedProduct.uid}, product name: ${updatedProduct.productName}, product price ${updatedProduct.productPrice}, product urls: ${updatedProduct.urls}');
 
 
-      //ToDo:delete the url from the product class
+        //ToDo: delete the image from the firebase storage
+        FirebaseStorage firebaseStorage = FirebaseStorage.instance;
+        StorageReference ref = await firebaseStorage.getReferenceFromUrl(imgUrl);
+        await ref.delete();
+        print('img was deleted from firebase storage');
 
-      //ToDo: check if the new class and the orginal are equal or not
-      print(product == updatedProduct);
-    }catch(e){
-      print(e);
+        //ToDo: delete the image url from firebase database
+        updatedProduct.urls.forEach((element) async{
+
+          if(updatedProduct.urls.remove(element)){
+            await doc.reference.setData({
+              'productName': updatedProduct.productName,
+              'price': updatedProduct.productPrice,
+              'imagesUrls': updatedProduct.urls,
+            });
+
+          }else{
+            print('error in shop_owner_services file line 84: there is not image with this url');
+          }
+          print(element);
+          print(imgUrl);
+          print(imgUrl == element);
+        });
+      }catch(e){
+        print(e);
+      }
+      print('shop_owner_services file line 82: the url was removed successfuly from the class and the database');
+      notifyListeners();
+    }else{
+      print('error in shop_owner_services file line 84: there is not image with this url');
     }
-
-
-
-    
-
   }
 
   Future<List<String>> _uploadImages(List<Asset> assets, String shopName, String productName) async {
