@@ -16,14 +16,14 @@ class ProductEditPage extends StatefulWidget {
 
 class _ProductEditPageState extends State<ProductEditPage> {
 
-  List<Asset> images = List<Asset>();
+  List<Asset> chosedImages = List<Asset>();
   String _error;
 
   Widget buildGridView() {
     return GridView.count(
       crossAxisCount: 3,
-      children: List.generate(images.length, (index) {
-        Asset asset = images[index];
+      children: List.generate(chosedImages.length, (index) {
+        Asset asset = chosedImages[index];
         return AssetThumb(
           asset: asset,
           width: 300,
@@ -35,7 +35,7 @@ class _ProductEditPageState extends State<ProductEditPage> {
 
   Future<void> loadAssets() async {
     setState(() {
-      images = List<Asset>();
+      chosedImages = List<Asset>();
     });
 
     List<Asset> resultList;
@@ -56,10 +56,10 @@ class _ProductEditPageState extends State<ProductEditPage> {
 
     setState(() {
       if (resultList == null) {
-        images = [];
+        chosedImages = [];
         return;
       }
-      images = resultList;
+      chosedImages = resultList;
       if (error == null) _error = 'No Error Dectected';
     });
   }
@@ -80,12 +80,13 @@ class _ProductEditPageState extends State<ProductEditPage> {
               height: 300,
               width: 200,
               child: GridView.builder(
-                itemCount: widget.product.urls.length + images.length,
+                itemCount: widget.product.urls.length + chosedImages.length,
                 shrinkWrap: true,
                 gridDelegate:
                     SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
                 itemBuilder: (context, index){
-                  return image(widget.product.urls[index], context);
+                  List<dynamic> images = [...widget.product.urls, ...chosedImages];
+                  return image(images[index], context);
                 },
               ),
             ),
@@ -94,7 +95,7 @@ class _ProductEditPageState extends State<ProductEditPage> {
             ),
             RaisedButton(
               child: Text('Pick Images'),
-              onPressed: (){},
+              onPressed: loadAssets,
             ),
             SizedBox(
               height: 16,
@@ -119,7 +120,7 @@ class _ProductEditPageState extends State<ProductEditPage> {
     );
   }
 
-  Widget image(String url, BuildContext context) {
+  Widget image(image,BuildContext context) {
     FirebaseStorage firebaseStorage = FirebaseStorage.instance;
     final services = Provider.of<ShopOwnerServices>(context);
     return Center(
@@ -127,13 +128,13 @@ class _ProductEditPageState extends State<ProductEditPage> {
         padding: const EdgeInsets.all(8.0),
         child: Stack(
           children: <Widget>[
-            Image.network(url),
+            image is String ? Image.network(image, height: 300, width: 300,) : AssetThumb(asset: image, height: 300, width: 300,),
             Positioned(
               bottom: 0,
               child: GestureDetector(
                 child: Icon(Icons.delete),
                 onTap: ()async {
-                  await services.deleteImageFromProduct('fish', widget.product, url);
+                  await services.deleteImageFromProduct('fish', widget.product, image);
                   setState(() {
 
                   });

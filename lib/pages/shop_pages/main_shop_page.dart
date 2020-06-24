@@ -63,7 +63,7 @@ class MainShopPage extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: (){
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> AddProductPage(shopName: shop.shopName,)));
+          Navigator.push(context, MaterialPageRoute(builder: (context)=> AddProductPage(shopName: shop.shopName,)));
         },
       ),
     );
