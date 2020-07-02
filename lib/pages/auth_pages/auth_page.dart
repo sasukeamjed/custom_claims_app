@@ -30,81 +30,89 @@ class _AuthPageState extends State<AuthPage> {
   Widget build(BuildContext context) {
     AuthService _auth = Provider.of<AuthService>(context);
     if(state == LoginState.signIn){
-      return Scaffold(
-        appBar: AppBar(
-          title: Text('Custom Claim'),
-        ),
-        body: Center(
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  TextField(
-                    decoration: InputDecoration(hintText: 'Email'),
-                    controller: textEmail,
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  TextField(
-                    controller: textPassword,
-                    decoration: InputDecoration(hintText: 'Password'),
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      RaisedButton(
-                        child: Text('Login'),
-                        onPressed: () async {
-                          await _auth.login(textEmail.text, textPassword.text);
-                        },
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Text(
-                            "You Don't Have An Account ? ",
+      return signIn(_auth);
+    }
+    return signUp(_auth);
+  }
+
+  Widget signIn(AuthService auth){
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Custom Claim'),
+      ),
+      body: Center(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                TextField(
+                  decoration: InputDecoration(hintText: 'Email'),
+                  controller: textEmail,
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                TextField(
+                  controller: textPassword,
+                  decoration: InputDecoration(hintText: 'Password'),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    RaisedButton(
+                      child: Text('Login'),
+                      onPressed: () async {
+                        await auth.login(textEmail.text, textPassword.text);
+                      },
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Text(
+                          "You Don't Have An Account ? ",
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              state = LoginState.signUp;
+                            });
+                          },
+                          child: Text(
+                            "Sign Up",
                             style: TextStyle(
-                              color: Colors.black,
+                              color: Colors.blue,
                               fontSize: 14,
-                              fontWeight: FontWeight.w500,
+                              fontWeight: FontWeight.bold,
+                              decoration: TextDecoration.underline,
                             ),
                           ),
-                          GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                state = LoginState.signUp;
-                              });
-                            },
-                            child: Text(
-                              "Sign Up",
-                              style: TextStyle(
-                                color: Colors.blue,
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                decoration: TextDecoration.underline,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
         ),
-      );
-    }
+      ),
+    );
+  }
+
+  Widget signUp(AuthService auth){
     return Scaffold(
       appBar: AppBar(
         title: Text('Custom Claim'),
@@ -150,7 +158,7 @@ class _AuthPageState extends State<AuthPage> {
                     RaisedButton(
                       child: Text('Sign Up'),
                       onPressed: () async {
-                        await _auth.register(
+                        await auth.register(
                             username: userName.text,
                             email: textEmail.text,
                             password: textPassword.text,

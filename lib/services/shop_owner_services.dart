@@ -2,12 +2,19 @@ import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:customclaimsapp/models/product_model.dart';
+import 'package:customclaimsapp/models/users/secondery_users/shop_owner_model.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 import 'package:provider/provider.dart';
 
 class ShopOwnerServices extends ChangeNotifier {
+
+  final ShopOwner shop;
+
+  ShopOwnerServices({@required this.shop}): assert(shop != null, 'shop should not be null'){
+    fetchAllProducts(shopName: shop.shopName);
+  }
 
   Future<void> addProduct(
       {@required String shopName,
@@ -42,9 +49,9 @@ class ShopOwnerServices extends ChangeNotifier {
     print('shop_owner_services 36 => fetchAllProducts function is fired');
     List<Product> products = [];
     try {
-      QuerySnapshot docs = await Firestore.instance.collection('Shops')?.document(shopName)?.collection('Products')?.getDocuments();
+      Stream<QuerySnapshot> streamOfProducts = await Firestore.instance.collection('Shops')?.document(shopName)?.collection('Products')?.getDocuments().asStream();
       //ToDo: fetch all products
-      docs.documents.forEach((element) {
+      streamOfProducts.documents.forEach((element) {
         products.add(Product(uid: element.documentID, productName: element.data['productName'], productPrice: element.data['price'], urls: element.data['imagesUrls'].cast<String>().toList()));
       });
       return products;

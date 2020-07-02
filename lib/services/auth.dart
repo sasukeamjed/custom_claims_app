@@ -19,6 +19,8 @@ class AuthService extends ChangeNotifier {
 
   FirebaseAuth _auth = FirebaseAuth.instance;
 
+  ShopOwner get shop => _shopOwner;
+
   Future<AuthResult> login(email, password) async {
     try {
       await _auth.signInWithEmailAndPassword(email: email, password: password);
@@ -28,7 +30,10 @@ class AuthService extends ChangeNotifier {
     }
   }
 
+
+  //This method is used in AuthWidgetBuilder to check if there is a user logged in or not
   Future<dynamic> getCurrentUser() async {
+    print('getCurrentUser method line 34 auth.dart is fired');
     var user = await _auth.currentUser();
     IdTokenResult idTokenResult = await user.getIdToken();
     print('AuthService getCurrentUser 34 : ${idTokenResult.claims}');
@@ -73,11 +78,7 @@ class AuthService extends ChangeNotifier {
     );
   }
 
-  Future<Map> getClaim(FirebaseUser firebaseUser) async {
-    IdTokenResult idTokenResult = await firebaseUser.getIdToken();
-    return idTokenResult.claims;
-  }
-
+  //This method is used in AuthPage to register a new user
   Future<AuthResult> register(
       {@required String username,
       @required String email,
