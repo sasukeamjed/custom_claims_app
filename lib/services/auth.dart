@@ -30,6 +30,54 @@ class AuthService extends ChangeNotifier {
     }
   }
 
+  //Stream of users
+  Stream<Object> users(){
+    return _auth.onAuthStateChanged.asyncMap((firebaseUser)async{
+      IdTokenResult idTokenResult = await firebaseUser.getIdToken();
+
+      Map<dynamic, dynamic> claims = idTokenResult.claims;
+
+      if (claims['claim'] == 'admin') {
+        return Admin(
+            uid: firebaseUser.uid,
+            email: firebaseUser.email,
+            claim: claims['claim'],
+            token: idTokenResult.token,
+            phoneNumber: firebaseUser.phoneNumber,);
+      } else if (claims['claim'] == 'shop') {
+
+        DocumentSnapshot doc = await Firestore.instance
+            .collection('Shops')
+            .document(firebaseUser.displayName)
+            .get();
+
+        String shopOwnerName = doc.data['shopOwnerName'];
+        //ToDo:check if this code needed
+        ShopOwnerServices shopServices = ShopOwnerServices();
+
+        List<Product> products =
+        await shopServices.fetchAllProducts(shopName: firebaseUser.displayName);
+
+        return ShopOwner(
+          uid: firebaseUser.uid,
+          shopName: firebaseUser.displayName,
+          email: firebaseUser.email,
+          claim: claims['claim'],
+          token: idTokenResult.token,
+          phoneNumber: firebaseUser.phoneNumber,
+          shopOwnerName: shopOwnerName,
+          products: products,
+        );
+      }
+      return Customer(
+        uid: firebaseUser.uid,
+        email: firebaseUser.email,
+        claim: claims['claim'],
+        phoneNumber: firebaseUser.phoneNumber,
+      );
+    });
+  }
+
 
   //This method is used in AuthWidgetBuilder to check if there is a user logged in or not
   Future<dynamic> getCurrentUser() async {

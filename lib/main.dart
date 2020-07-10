@@ -9,11 +9,19 @@ import 'package:provider/provider.dart';
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
-
+  AuthService _authService = AuthService();
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        StreamProvider<Object>(
+          create: (context) => _authService.users(),
+        ),
+        ProxyProvider<Object, Object>(
+          update: (context, user, service){
+
+          },
+        ),
         ChangeNotifierProvider(
           create: (_)=> AuthService(),
         ),

@@ -29,7 +29,7 @@
 //                  return MainAdminPage();
 //                }
 //                return Builder(
-//                  //ToDo:Delete the builder function
+//
 //                  builder: (BuildContext context){
 //                    print('this is a inside builder');
 //                    return Scaffold(
@@ -43,7 +43,7 @@
 //            )
 //          : SignInPage();
 //    }
-//    //ToDo:Delete the builder function
+//
 //    return Builder(
 //      builder: (BuildContext context){
 //        print('this is a outside builder');

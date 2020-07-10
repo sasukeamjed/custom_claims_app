@@ -1,12 +1,19 @@
 import 'dart:io';
 
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:customclaimsapp/models/users/secondery_users/admin_model.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 
 class AdminService {
+
+  final Admin admin;
+
+
   FirebaseStorage _firebaseStorage =
       FirebaseStorage(storageBucket: 'gs://fir-auth-test-a160f.appspot.com');
+
+  AdminService({this.admin});
 
   Future<void> addAdmin({
     @required String idToken,

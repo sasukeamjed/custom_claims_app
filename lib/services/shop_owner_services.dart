@@ -74,13 +74,13 @@ class ShopOwnerServices extends ChangeNotifier {
         print('Fetched Product product uid : ${updatedProduct.uid}, product name: ${updatedProduct.productName}, product price ${updatedProduct.productPrice}, product urls: ${updatedProduct.urls}');
 
 
-        //ToDo: delete the image from the firebase storage
+
         FirebaseStorage firebaseStorage = FirebaseStorage.instance;
         StorageReference ref = await firebaseStorage.getReferenceFromUrl(imgUrl);
         await ref.delete();
         print('img was deleted from firebase storage');
 
-        //ToDo: delete the image url from firebase database
+
         updatedProduct.urls.forEach((element) async{
 
           if(updatedProduct.urls.remove(element)){
