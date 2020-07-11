@@ -22,9 +22,6 @@ class AuthWidgetBuilder extends StatefulWidget {
 }
 
 class _AuthWidgetBuilderState extends State<AuthWidgetBuilder> {
-  AuthService authService;
-  Future getUser;
-
   @override
   void initState() {
     super.initState();
@@ -32,46 +29,60 @@ class _AuthWidgetBuilderState extends State<AuthWidgetBuilder> {
 
   @override
   void didChangeDependencies() {
-    authService = Provider.of<AuthService>(context);
-    getUser = authService.getCurrentUser();
     super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
-    print('AuthWidgetBuilder is rebuild');
-    return FutureBuilder(
-      future: getUser,
-      builder: (BuildContext context, AsyncSnapshot snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          if (snapshot.data != null) {
-            if(snapshot.data is Admin){
-              return Provider<Admin>.value(
-                value: snapshot.data,
-                child: redirect(snapshot.data.claim),
-              );
-            }else if(snapshot.data is ShopOwner){
-              return Provider<ShopOwner>.value(
-                value: snapshot.data,
-                child: redirect(snapshot.data.claim),
-              );
-            }else{
-              return Provider<Customer>.value(
-                value: snapshot.data,
-                child: redirect(snapshot.data.claim),
-              );
-            }
-          }
-          return AuthPage();
-        }
-        return Scaffold(
-          body: Center(
-            child: CircularProgressIndicator(),
-          ),
-        );
-      },
-    );
+    final user = Provider.of<Object>(context);
+    print('AuthWidgetBuilder is rebuild with: $user');
+    if(user == null){
+      return AuthPage();
+    }
+    else if(user is Admin){
+      return MainAdminPage();
+    }else if(user is ShopOwner){
+      return MainShopPage();
+    }else{
+      return MainCustomerPage();
+    }
   }
+
+//  @override
+//  Widget build(BuildContext context) {
+//    print('AuthWidgetBuilder is rebuild');
+//    return FutureBuilder(
+//      future: getUser,
+//      builder: (BuildContext context, AsyncSnapshot snapshot) {
+//        if (snapshot.connectionState == ConnectionState.done) {
+//          if (snapshot.data != null) {
+//            if(snapshot.data is Admin){
+//              return Provider<Admin>.value(
+//                value: snapshot.data,
+//                child: redirect(snapshot.data.claim),
+//              );
+//            }else if(snapshot.data is ShopOwner){
+//              return Provider<ShopOwner>.value(
+//                value: snapshot.data,
+//                child: redirect(snapshot.data.claim),
+//              );
+//            }else{
+//              return Provider<Customer>.value(
+//                value: snapshot.data,
+//                child: redirect(snapshot.data.claim),
+//              );
+//            }
+//          }
+//          return AuthPage();
+//        }
+//        return Scaffold(
+//          body: Center(
+//            child: CircularProgressIndicator(),
+//          ),
+//        );
+//      },
+//    );
+//  }
 
   Widget redirect(String claim){
     if(claim == 'admin'){

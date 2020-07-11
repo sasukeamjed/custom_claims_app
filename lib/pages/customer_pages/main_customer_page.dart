@@ -3,9 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class MainCustomerPage extends StatelessWidget {
+
+  AuthService _authService = AuthService();
+
   @override
   Widget build(BuildContext context) {
-    final _auth = Provider.of<AuthService>(context);
+
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -14,7 +17,7 @@ class MainCustomerPage extends StatelessWidget {
           IconButton(
             icon: Icon(Icons.exit_to_app),
             onPressed: () async{
-              await _auth.logout();
+              await _authService.logout();
             },
           ),
         ],

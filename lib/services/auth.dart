@@ -9,6 +9,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:rxdart/rxdart.dart';
 
 class AuthService extends ChangeNotifier {
   bool fetchingData = false;
@@ -16,6 +17,8 @@ class AuthService extends ChangeNotifier {
   ShopOwner _shopOwner;
   Admin _admin;
   Customer _customer;
+
+
 
   FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -29,6 +32,13 @@ class AuthService extends ChangeNotifier {
       print(e);
     }
   }
+  //ToDo:dispose of the stream
+  BehaviorSubject _behaviorSubject = BehaviorSubject<Object>();
+
+
+  Stream get currentUsers => _behaviorSubject.stream;
+
+
 
   //Stream of users
   Stream<Object> users(){
@@ -55,8 +65,8 @@ class AuthService extends ChangeNotifier {
         //ToDo:check if this code needed
         ShopOwnerServices shopServices = ShopOwnerServices();
 
-        List<Product> products =
-        await shopServices.fetchAllProducts(shopName: firebaseUser.displayName);
+//        List<Product> products =
+//        await shopServices.fetchAllProducts(shopName: firebaseUser.displayName);
 
         return ShopOwner(
           uid: firebaseUser.uid,
@@ -66,7 +76,7 @@ class AuthService extends ChangeNotifier {
           token: idTokenResult.token,
           phoneNumber: firebaseUser.phoneNumber,
           shopOwnerName: shopOwnerName,
-          products: products,
+          products: [],
         );
       }
       return Customer(
@@ -79,15 +89,16 @@ class AuthService extends ChangeNotifier {
   }
 
 
+
   //This method is used in AuthWidgetBuilder to check if there is a user logged in or not
-  Future<dynamic> getCurrentUser() async {
-    print('getCurrentUser method line 34 auth.dart is fired');
+  Future<Object> getCurrentUser() async {
+    print('getCurrentUser method line 95 auth.dart is fired');
     var user = await _auth.currentUser();
     IdTokenResult idTokenResult = await user.getIdToken();
     print('AuthService getCurrentUser 34 : ${idTokenResult.claims}');
     Map claims = idTokenResult.claims;
     if (claims['claim'] == 'admin') {
-      return _admin = Admin(
+      return Admin(
           uid: user.uid,
           email: user.email,
           claim: claims['claim'],
@@ -104,10 +115,10 @@ class AuthService extends ChangeNotifier {
 
       ShopOwnerServices shopServices = ShopOwnerServices();
 
-      List<Product> products =
-          await shopServices.fetchAllProducts(shopName: user.displayName);
+//      List<Product> products =
+//          await shopServices.fetchAllProducts(shopName: user.displayName);
 
-      return _shopOwner = ShopOwner(
+      return ShopOwner(
         uid: user.uid,
         shopName: user.displayName,
         email: user.email,
@@ -115,10 +126,10 @@ class AuthService extends ChangeNotifier {
         token: idTokenResult.token,
         phoneNumber: user.phoneNumber,
         shopOwnerName: shopOwnerName,
-        products: products,
+        products: [],
       );
     }
-    return _customer = Customer(
+    return Customer(
       uid: user.uid,
       email: user.email,
       claim: claims['claim'],

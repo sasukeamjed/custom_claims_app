@@ -12,6 +12,28 @@ class MainAdminPage extends StatefulWidget {
 }
 
 class _MainAdminPageState extends State<MainAdminPage> {
+
+  AuthService _auth = AuthService();
+
+
+  AdminService adminService;
+
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+
+  @override
+  void didChangeDependencies() {
+    final providerService = Provider.of<Object>(context);
+    if(providerService is AdminService){
+      adminService = providerService;
+    }
+    super.didChangeDependencies();
+  }
+
   int index = 0;
 
   List<Widget> page = [StatsPage(), AddUserPage()];
@@ -19,7 +41,7 @@ class _MainAdminPageState extends State<MainAdminPage> {
   @override
   Widget build(BuildContext context) {
     print('Main Admin Page is Build');
-    final _auth = Provider.of<AuthService>(context);
+
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -51,10 +73,7 @@ class _MainAdminPageState extends State<MainAdminPage> {
           ),
         ],
       ),
-      body: Provider(
-        create: (_) => AdminService(),
-        child: page[index],
-      ),
+      body: page[index],
     );
   }
 }

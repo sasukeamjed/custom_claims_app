@@ -11,8 +11,8 @@ class AddAdminPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     print('Add Admin Page is Build');
-    final adminService = Provider.of<AdminService>(context);
-    final currentUser = Provider.of<MainUser>(context);
+    final AdminService adminService = Provider.of<Object>(context);
+
     return Container(
       width: double.infinity,
       padding: EdgeInsets.all(20.0),
@@ -43,7 +43,7 @@ class AddAdminPage extends StatelessWidget {
             RaisedButton(
               child: Text('Add The Admin'),
               onPressed: () async {
-                await adminService.addAdmin(idToken: currentUser.token,
+                await adminService.addAdmin(idToken: adminService.user.token,
                    fullName: _fullName.text, email: _emailText.text, phoneNumber: _phoneNumber.text);
               },
             ),

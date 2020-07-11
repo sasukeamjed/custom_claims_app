@@ -7,13 +7,13 @@ import 'package:flutter/cupertino.dart';
 
 class AdminService {
 
-  final Admin admin;
+  final Admin user;
 
 
   FirebaseStorage _firebaseStorage =
       FirebaseStorage(storageBucket: 'gs://fir-auth-test-a160f.appspot.com');
 
-  AdminService({this.admin});
+  AdminService({this.user});
 
   Future<void> addAdmin({
     @required String idToken,

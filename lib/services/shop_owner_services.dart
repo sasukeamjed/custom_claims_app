@@ -10,11 +10,9 @@ import 'package:provider/provider.dart';
 
 class ShopOwnerServices extends ChangeNotifier {
 
-  final ShopOwner shop;
+  final ShopOwner user;
 
-  ShopOwnerServices({@required this.shop}): assert(shop != null, 'shop should not be null'){
-    fetchAllProducts(shopName: shop.shopName);
-  }
+  ShopOwnerServices({@required this.user});
 
   Future<void> addProduct(
       {@required String shopName,
@@ -45,20 +43,20 @@ class ShopOwnerServices extends ChangeNotifier {
     }
   }
 
-  Future<List<Product>> fetchAllProducts({@required String shopName}) async {
-    print('shop_owner_services 36 => fetchAllProducts function is fired');
-    List<Product> products = [];
-    try {
-      Stream<QuerySnapshot> streamOfProducts = await Firestore.instance.collection('Shops')?.document(shopName)?.collection('Products')?.getDocuments().asStream();
-      //ToDo: fetch all products
-      streamOfProducts.documents.forEach((element) {
-        products.add(Product(uid: element.documentID, productName: element.data['productName'], productPrice: element.data['price'], urls: element.data['imagesUrls'].cast<String>().toList()));
-      });
-      return products;
-    } catch (e) {
-      print('shop_owner_services 55 => $e');
-    }
-  }
+//  Future<List<Product>> fetchAllProducts({@required String shopName}) async {
+//    print('shop_owner_services 36 => fetchAllProducts function is fired');
+//    List<Product> products = [];
+//    try {
+//      Stream<QuerySnapshot> streamOfProducts = await Firestore.instance.collection('Shops')?.document(shopName)?.collection('Products')?.getDocuments().asStream();
+//      //ToDo: fetch all products
+////      streamOfProducts.documents.forEach((element) {
+////        products.add(Product(uid: element.documentID, productName: element.data['productName'], productPrice: element.data['price'], urls: element.data['imagesUrls'].cast<String>().toList()));
+////      });
+//      return products;
+//    } catch (e) {
+//      print('shop_owner_services 55 => $e');
+//    }
+//  }
   
 
   Future<void> deleteImageFromProduct(String shopName, Product product, String imgUrl) async{
