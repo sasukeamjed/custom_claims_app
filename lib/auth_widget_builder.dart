@@ -7,9 +7,12 @@ import 'package:customclaimsapp/models/users/secondery_users/customer_model.dart
 import 'package:customclaimsapp/models/users/secondery_users/shop_owner_model.dart';
 import 'package:customclaimsapp/pages/admin_pages/main_admin_page.dart';
 import 'package:customclaimsapp/pages/auth_pages/auth_page.dart';
+import 'package:customclaimsapp/services/admin_services.dart';
 import 'package:customclaimsapp/services/auth.dart';
 import 'package:customclaimsapp/pages/shop_pages/main_shop_page.dart';
 import 'package:customclaimsapp/pages/customer_pages/main_customer_page.dart';
+import 'package:customclaimsapp/services/customer_services.dart';
+import 'package:customclaimsapp/services/shop_owner_services.dart';
 
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -39,12 +42,15 @@ class _AuthWidgetBuilderState extends State<AuthWidgetBuilder> {
     if(user == null){
       return AuthPage();
     }
-    else if(user is Admin){
+    else if(user is AdminService){
       return MainAdminPage();
-    }else if(user is ShopOwner){
+    }else if(user is ShopOwnerServices){
       return MainShopPage();
-    }else{
+    }else if(user is CustomerServices){
       return MainCustomerPage();
+    }
+    else{
+      return AuthPage();
     }
   }
 

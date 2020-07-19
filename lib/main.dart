@@ -1,6 +1,7 @@
 import 'package:customclaimsapp/auth_widget.dart';
 import 'package:customclaimsapp/auth_widget_builder.dart';
 import 'package:customclaimsapp/models/users/secondery_users/admin_model.dart';
+import 'package:customclaimsapp/models/users/secondery_users/customer_model.dart';
 import 'package:customclaimsapp/models/users/secondery_users/shop_owner_model.dart';
 import 'package:customclaimsapp/services/admin_services.dart';
 import 'package:customclaimsapp/services/auth.dart';
@@ -23,8 +24,8 @@ class MyApp extends StatelessWidget {
         Provider(
           create: (context)=> _authService,
         ),
-        FutureProvider(
-          create: (context)=> _authService.getCurrentUser(),
+        StreamProvider<Object>(
+          create: (context) => _authService.users(),
         ),
         ProxyProvider<Object, Object>(
           lazy: false,
@@ -35,14 +36,13 @@ class MyApp extends StatelessWidget {
             else if(user is ShopOwner){
               return ShopOwnerServices(user: user);
             }
-            else{
+            else if(user is Customer){
               return CustomerServices(user: user);
             }
+            return null;
           },
         ),
-        StreamProvider<Object>(
-          create: (context) => _authService.users(),
-        ),
+
       ],
       child: MaterialApp(
         home: AuthWidgetBuilder(),

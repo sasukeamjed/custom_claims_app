@@ -32,11 +32,10 @@ class AuthService extends ChangeNotifier {
       print(e);
     }
   }
-  //ToDo:dispose of the stream
-  BehaviorSubject _behaviorSubject = BehaviorSubject<Object>();
 
+  Future<bool> isLoggedIn() async{
 
-  Stream get currentUsers => _behaviorSubject.stream;
+  }
 
 
 
@@ -79,12 +78,16 @@ class AuthService extends ChangeNotifier {
           products: [],
         );
       }
-      return Customer(
-        uid: firebaseUser.uid,
-        email: firebaseUser.email,
-        claim: claims['claim'],
-        phoneNumber: firebaseUser.phoneNumber,
-      );
+      else if(claims['claim'] == 'customer'){
+        return Customer(
+          uid: firebaseUser.uid,
+          email: firebaseUser.email,
+          claim: claims['claim'],
+          phoneNumber: firebaseUser.phoneNumber,
+        );
+      }
+      return null;
+
     });
   }
 
