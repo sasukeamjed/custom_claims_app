@@ -1,5 +1,7 @@
 
 
+import 'dart:async';
+
 import 'package:customclaimsapp/auth_widget.dart';
 import 'package:customclaimsapp/models/users/main_user.dart';
 import 'package:customclaimsapp/models/users/secondery_users/admin_model.dart';
@@ -25,8 +27,16 @@ class AuthWidgetBuilder extends StatefulWidget {
 }
 
 class _AuthWidgetBuilderState extends State<AuthWidgetBuilder> {
+  StreamSubscription _usersSubscription;
+
   @override
   void initState() {
+    var auth = Provider.of<AuthService>(context);
+    _usersSubscription = auth.users.listen((usersServices) {
+      if(usersServices == null){
+        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context)=> AuthPage()), (route) => false);
+      }
+    });
     super.initState();
   }
 

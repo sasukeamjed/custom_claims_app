@@ -16,33 +16,14 @@ void main() {
   return runApp(MyApp());}
 
 class MyApp extends StatelessWidget {
-  AuthService _authService = AuthService();
+
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
         Provider(
-          create: (context)=> _authService,
+          create: (context)=> AuthService(),
         ),
-        StreamProvider<Object>(
-          create: (context) => _authService.users(),
-        ),
-        ProxyProvider<Object, Object>(
-          lazy: false,
-          update: (context, user, service){
-            if(user is Admin){
-              return AdminService(user: user);
-            }
-            else if(user is ShopOwner){
-              return ShopOwnerServices(user: user);
-            }
-            else if(user is Customer){
-              return CustomerServices(user: user);
-            }
-            return null;
-          },
-        ),
-
       ],
       child: MaterialApp(
         home: AuthWidgetBuilder(),

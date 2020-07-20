@@ -3,6 +3,8 @@ import 'package:customclaimsapp/models/product_model.dart';
 import 'package:customclaimsapp/models/users/secondery_users/admin_model.dart';
 import 'package:customclaimsapp/models/users/secondery_users/customer_model.dart';
 import 'package:customclaimsapp/models/users/secondery_users/shop_owner_model.dart';
+import 'package:customclaimsapp/services/admin_services.dart';
+import 'package:customclaimsapp/services/customer_services.dart';
 import 'package:customclaimsapp/services/shop_owner_services.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -17,6 +19,10 @@ class AuthService extends ChangeNotifier {
   ShopOwner _shopOwner;
   Admin _admin;
   Customer _customer;
+
+  final BehaviorSubject<Object> _users = BehaviorSubject<Object>();
+
+  Stream<Object> get users => _users.stream;
 
 
 
@@ -34,62 +40,116 @@ class AuthService extends ChangeNotifier {
   }
 
   Future<bool> isLoggedIn() async{
+    var firebaseUser = await _auth.currentUser();
+    IdTokenResult idTokenResult = await firebaseUser.getIdToken();
+    String claim = idTokenResult.claims['claim'];
 
+    if(claim == 'admin'){
+      Admin admin = Admin(
+        uid: firebaseUser.uid,
+        email: firebaseUser.email,
+        claim: claim,
+        token: idTokenResult.token,
+        phoneNumber: firebaseUser.phoneNumber,);
+
+      AdminService adminService = AdminService(user: admin);
+      _users.sink.add(adminService);
+    }
+    else if(claim == 'shop'){
+
+      DocumentSnapshot doc = await Firestore.instance
+          .collection('Shops')
+          .document(firebaseUser.displayName)
+          .get();
+
+      String shopOwnerName = doc.data['shopOwnerName'];
+      //ToDo:check if this code needed
+
+
+//        List<Product> products =
+//        await shopServices.fetchAllProducts(shopName: firebaseUser.displayName);
+
+      ShopOwner shop = ShopOwner(
+        uid: firebaseUser.uid,
+        shopName: firebaseUser.displayName,
+        email: firebaseUser.email,
+        claim: claim,
+        token: idTokenResult.token,
+        phoneNumber: firebaseUser.phoneNumber,
+        shopOwnerName: shopOwnerName,
+        products: [],
+      );
+
+      ShopOwnerServices shopServices = ShopOwnerServices(user: shop);
+
+      _users.sink.add(shopServices);
+    }else{
+      Customer customer = Customer(
+        uid: firebaseUser.uid,
+        email: firebaseUser.email,
+        claim: claim,
+        phoneNumber: firebaseUser.phoneNumber,
+      );
+
+      CustomerServices customerServices = CustomerServices(user: customer);
+
+      _users.sink.add(customerServices);
+    }
   }
 
 
 
   //Stream of users
-  Stream<Object> users(){
-    return _auth.onAuthStateChanged.asyncMap((firebaseUser)async{
-      IdTokenResult idTokenResult = await firebaseUser.getIdToken();
-
-      Map<dynamic, dynamic> claims = idTokenResult.claims;
-
-      if (claims['claim'] == 'admin') {
-        return Admin(
-            uid: firebaseUser.uid,
-            email: firebaseUser.email,
-            claim: claims['claim'],
-            token: idTokenResult.token,
-            phoneNumber: firebaseUser.phoneNumber,);
-      } else if (claims['claim'] == 'shop') {
-
-        DocumentSnapshot doc = await Firestore.instance
-            .collection('Shops')
-            .document(firebaseUser.displayName)
-            .get();
-
-        String shopOwnerName = doc.data['shopOwnerName'];
-        //ToDo:check if this code needed
-        ShopOwnerServices shopServices = ShopOwnerServices();
-
-//        List<Product> products =
-//        await shopServices.fetchAllProducts(shopName: firebaseUser.displayName);
-
-        return ShopOwner(
-          uid: firebaseUser.uid,
-          shopName: firebaseUser.displayName,
-          email: firebaseUser.email,
-          claim: claims['claim'],
-          token: idTokenResult.token,
-          phoneNumber: firebaseUser.phoneNumber,
-          shopOwnerName: shopOwnerName,
-          products: [],
-        );
-      }
-      else if(claims['claim'] == 'customer'){
-        return Customer(
-          uid: firebaseUser.uid,
-          email: firebaseUser.email,
-          claim: claims['claim'],
-          phoneNumber: firebaseUser.phoneNumber,
-        );
-      }
-      return null;
-
-    });
-  }
+//  Stream<Object> users(){
+//    return _auth.onAuthStateChanged.asyncMap((firebaseUser)async{
+//      IdTokenResult idTokenResult = await firebaseUser.getIdToken();
+//
+//      Map<dynamic, dynamic> claims = idTokenResult.claims;
+//
+//      if (claims['claim'] == 'admin') {
+//        return Admin(
+//            uid: firebaseUser.uid,
+//            email: firebaseUser.email,
+//            claim: claims['claim'],
+//            token: idTokenResult.token,
+//            phoneNumber: firebaseUser.phoneNumber,);
+//      } else if (claims['claim'] == 'shop') {
+//
+//        DocumentSnapshot doc = await Firestore.instance
+//            .collection('Shops')
+//            .document(firebaseUser.displayName)
+//            .get();
+//
+//        String shopOwnerName = doc.data['shopOwnerName'];
+//        //ToDo:check if this code needed
+//        ShopOwnerServices shopServices = ShopOwnerServices();
+//
+////        List<Product> products =
+////        await shopServices.fetchAllProducts(shopName: firebaseUser.displayName);
+//
+//        return ShopOwner(
+//          uid: firebaseUser.uid,
+//          shopName: firebaseUser.displayName,
+//          email: firebaseUser.email,
+//          claim: claims['claim'],
+//          token: idTokenResult.token,
+//          phoneNumber: firebaseUser.phoneNumber,
+//          shopOwnerName: shopOwnerName,
+//          products: [],
+//        );
+//      }
+//      else if(claims['claim'] == 'customer'){
+//        return Customer(
+//          uid: firebaseUser.uid,
+//          email: firebaseUser.email,
+//          claim: claims['claim'],
+//          phoneNumber: firebaseUser.phoneNumber,
+//        );
+//      }
+//      return null;
+//
+//    });
+//  }
 
 
 
