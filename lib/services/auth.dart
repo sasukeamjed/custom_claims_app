@@ -41,6 +41,11 @@ class AuthService extends ChangeNotifier {
 
   Future<bool> isLoggedIn() async{
     var firebaseUser = await _auth.currentUser();
+
+    if(firebaseUser == null){
+      return false;
+    }
+
     IdTokenResult idTokenResult = await firebaseUser.getIdToken();
     String claim = idTokenResult.claims['claim'];
 
@@ -54,6 +59,7 @@ class AuthService extends ChangeNotifier {
 
       AdminService adminService = AdminService(user: admin);
       _users.sink.add(adminService);
+      return true;
     }
     else if(claim == 'shop'){
 
@@ -83,6 +89,7 @@ class AuthService extends ChangeNotifier {
       ShopOwnerServices shopServices = ShopOwnerServices(user: shop);
 
       _users.sink.add(shopServices);
+      return true;
     }else{
       Customer customer = Customer(
         uid: firebaseUser.uid,
@@ -94,6 +101,7 @@ class AuthService extends ChangeNotifier {
       CustomerServices customerServices = CustomerServices(user: customer);
 
       _users.sink.add(customerServices);
+      return true;
     }
   }
 

@@ -16,13 +16,16 @@ void main() {
   return runApp(MyApp());}
 
 class MyApp extends StatelessWidget {
-
+  AuthService _authService = AuthService();
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        FutureProvider(
+          create: (context) => _authService.isLoggedIn(),
+        ),
         Provider(
-          create: (context)=> AuthService(),
+          create: (context)=> _authService,
         ),
       ],
       child: MaterialApp(

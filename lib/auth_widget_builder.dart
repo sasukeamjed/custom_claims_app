@@ -48,9 +48,24 @@ class _AuthWidgetBuilderState extends State<AuthWidgetBuilder> {
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<Object>(context);
+    final isLoggedIn = Provider.of<bool>(context);
+
     print('AuthWidgetBuilder is rebuild with: $user');
-    if(user == null){
-      return AuthPage();
+    if(isLoggedIn == null){
+      return Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+    else if(isLoggedIn){
+      if(user is AdminService){
+
+      }else if(user is ShopOwnerServices){
+
+      }else if(user is CustomerServices){
+
+      }
     }
     else if(user is AdminService){
       return MainAdminPage();
