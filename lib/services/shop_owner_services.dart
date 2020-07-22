@@ -12,7 +12,7 @@ class ShopOwnerServices extends ChangeNotifier {
 
   final ShopOwner user;
 
-  ShopOwnerServices({@required this.user});
+  ShopOwnerServices({@required this.user}) : assert(user != null, 'user in shopservice is null');
 
   Future<void> addProduct(
       {@required String shopName,

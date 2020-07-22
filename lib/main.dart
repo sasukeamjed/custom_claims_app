@@ -21,11 +21,14 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        Provider(
+          create: (context)=> _authService,
+        ),
         FutureProvider(
           create: (context) => _authService.isLoggedIn(),
         ),
-        Provider(
-          create: (context)=> _authService,
+        StreamProvider(
+          create: (context)=> _authService.users,
         ),
       ],
       child: MaterialApp(

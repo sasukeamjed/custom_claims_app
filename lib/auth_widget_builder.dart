@@ -28,11 +28,11 @@ class AuthWidgetBuilder extends StatefulWidget {
 
 class _AuthWidgetBuilderState extends State<AuthWidgetBuilder> {
   StreamSubscription _usersSubscription;
-
+  AuthService authService;
   @override
   void initState() {
-    var auth = Provider.of<AuthService>(context);
-    _usersSubscription = auth.users.listen((usersServices) {
+    authService = Provider.of<AuthService>(context, listen: false);
+    _usersSubscription = authService.users.listen((usersServices) {
       if(usersServices == null){
         Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context)=> AuthPage()), (route) => false);
       }
@@ -40,17 +40,13 @@ class _AuthWidgetBuilderState extends State<AuthWidgetBuilder> {
     super.initState();
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-  }
 
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<Object>(context);
+
     final isLoggedIn = Provider.of<bool>(context);
 
-    print('AuthWidgetBuilder is rebuild with: $user');
+
     if(isLoggedIn == null){
       return Scaffold(
         body: Center(
@@ -59,24 +55,24 @@ class _AuthWidgetBuilderState extends State<AuthWidgetBuilder> {
       );
     }
     else if(isLoggedIn){
-      if(user is AdminService){
-
-      }else if(user is ShopOwnerServices){
-
-      }else if(user is CustomerServices){
-
-      }
-    }
-    else if(user is AdminService){
-      return MainAdminPage();
-    }else if(user is ShopOwnerServices){
-      return MainShopPage();
-    }else if(user is CustomerServices){
-      return MainCustomerPage();
-    }
-    else{
+      return StreamBuilder(
+        stream: authService.users,
+        builder: (BuildContext context, userService){
+          if(userService.data is AdminService){
+            return MainAdminPage();
+          }
+          else if(userService.data is ShopOwnerServices){
+            return MainShopPage();
+          }
+          else{
+            return MainCustomerPage();
+          }
+        },
+      );
+    }else{
       return AuthPage();
     }
+
   }
 
 //  @override

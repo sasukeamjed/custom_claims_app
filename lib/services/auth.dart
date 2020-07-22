@@ -86,6 +86,7 @@ class AuthService extends ChangeNotifier {
         products: [],
       );
 
+
       ShopOwnerServices shopServices = ShopOwnerServices(user: shop);
 
       _users.sink.add(shopServices);

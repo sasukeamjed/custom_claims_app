@@ -14,6 +14,11 @@ class MainShopPage extends StatelessWidget {
     print('Main shop page is build');
     final _auth = Provider.of<AuthService>(context);
     final ShopOwnerServices shop = Provider.of<Object>(context);
+
+    if(shop.user == null){
+      print('this shit is null');
+    }
+
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -32,22 +37,22 @@ class MainShopPage extends StatelessWidget {
           children: <Widget>[
             ListTile(
               title: Text('Shop Name'),
-              subtitle: Text(shop.user.shopName),
+              subtitle: Text(shop == null ? 'Waiting...' : shop.user.shopName),
             ),
             ListTile(
               title: Text('Shop Owner Name'),
-              subtitle: Text(shop.user.shopOwnerName),
+              subtitle: Text(shop.user == null ? 'Waiting...' : shop.user.shopOwnerName),
             ),
             ListTile(
               title: Text('Shop Email'),
-              subtitle: Text(shop.user.email),
+              subtitle: Text(shop.user == null ? 'Waiting...' : shop.user.email),
             ),
             ListTile(
               title: Text('Shop Phone Number'),
-              subtitle: Text(shop.user.phoneNumber),
+              subtitle: Text(shop.user == null ? 'Waiting...' : shop.user.phoneNumber),
             ),
             ListTile(
-              title: Text('Products Numbers'),
+              title: Text(shop.user == null ? 'Waiting...' : 'Products Numbers'),
               subtitle: Text(shop.user.products.length.toString()),
               trailing: Icon(Icons.keyboard_arrow_right),
               onTap: (){
