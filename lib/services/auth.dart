@@ -30,9 +30,70 @@ class AuthService extends ChangeNotifier {
 
   ShopOwner get shop => _shopOwner;
 
-  Future<AuthResult> login(email, password) async {
+  Future<void> login(email, password) async {
     try {
-      await _auth.signInWithEmailAndPassword(email: email, password: password);
+      AuthResult authResult = await _auth.signInWithEmailAndPassword(email: email, password: password);
+      FirebaseUser firebaseUser = authResult.user;
+
+      IdTokenResult idTokenResult = await authResult.user.getIdToken();
+      String claim = idTokenResult.claims['claim'];
+
+      if(claim == 'admin'){
+        Admin admin = Admin(
+          uid: firebaseUser.uid,
+          email: firebaseUser.email,
+          claim: claim,
+          token: idTokenResult.token,
+          phoneNumber: firebaseUser.phoneNumber,);
+
+        AdminService adminService = AdminService(user: admin);
+        _users.sink.add(adminService);
+
+      }
+      else if(claim == 'shop'){
+
+        DocumentSnapshot doc = await Firestore.instance
+            .collection('Shops')
+            .document(firebaseUser.displayName)
+            .get();
+
+        String shopOwnerName = doc.data['shopOwnerName'];
+        //ToDo:check if this code needed
+
+
+//        List<Product> products =
+//        await shopServices.fetchAllProducts(shopName: firebaseUser.displayName);
+
+        ShopOwner shop = ShopOwner(
+          uid: firebaseUser.uid,
+          shopName: firebaseUser.displayName,
+          email: firebaseUser.email,
+          claim: claim,
+          token: idTokenResult.token,
+          phoneNumber: firebaseUser.phoneNumber,
+          shopOwnerName: shopOwnerName,
+          products: [],
+        );
+
+
+        ShopOwnerServices shopServices = ShopOwnerServices(user: shop);
+
+        _users.sink.add(shopServices);
+
+      }else{
+        Customer customer = Customer(
+          uid: firebaseUser.uid,
+          email: firebaseUser.email,
+          claim: claim,
+          phoneNumber: firebaseUser.phoneNumber,
+        );
+
+        CustomerServices customerServices = CustomerServices(user: customer);
+
+        _users.sink.add(customerServices);
+
+      }
+
       notifyListeners();
     } catch (e) {
       print(e);
@@ -241,9 +302,7 @@ class AuthService extends ChangeNotifier {
 
   Future<void> logout() async {
     await _auth.signOut();
-    _admin = null;
-    _shopOwner = null;
-    _customer = null;
+    _users.sink.add(null);
     notifyListeners();
   }
 }

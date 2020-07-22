@@ -45,7 +45,7 @@ class _AuthWidgetBuilderState extends State<AuthWidgetBuilder> {
   Widget build(BuildContext context) {
 
     final isLoggedIn = Provider.of<bool>(context);
-
+    print('this is is isLoggedIn value: $isLoggedIn');
 
     if(isLoggedIn == null){
       return Scaffold(
@@ -53,25 +53,64 @@ class _AuthWidgetBuilderState extends State<AuthWidgetBuilder> {
           child: CircularProgressIndicator(),
         ),
       );
-    }
-    else if(isLoggedIn){
+    }else{
       return StreamBuilder(
         stream: authService.users,
         builder: (BuildContext context, userService){
+          print('stream builder is rebuilt');
+          print(isLoggedIn);
+
+          if(isLoggedIn){
+            print(userService.data);
+            if(userService.data is AdminService){
+              return MainAdminPage();
+            }
+            else if(userService.data is ShopOwnerServices){
+              return MainShopPage();
+            }
+            else if(userService.data is CustomerServices){
+              return MainCustomerPage();
+            }
+            else{
+              return AuthPage();
+            }
+          }
+          return AuthPage();
+        },
+      );
+    }
+
+
+    return StreamBuilder(
+      stream: authService.users,
+      builder: (BuildContext context, userService){
+        print('stream builder is rebuilt');
+        print(isLoggedIn);
+        if(isLoggedIn == null){
+          return Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }else if(isLoggedIn){
+          print(userService.data);
           if(userService.data is AdminService){
             return MainAdminPage();
           }
           else if(userService.data is ShopOwnerServices){
             return MainShopPage();
           }
-          else{
+          else if(userService.data is CustomerServices){
             return MainCustomerPage();
           }
-        },
-      );
-    }else{
-      return AuthPage();
-    }
+          else{
+            return AuthPage();
+          }
+        }
+        return AuthPage();
+      },
+    );
+
 
   }
 
