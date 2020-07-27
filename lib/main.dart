@@ -24,11 +24,12 @@ class MyApp extends StatelessWidget {
         Provider(
           create: (context)=> _authService,
         ),
-        FutureProvider(
-          create: (context) => _authService.isLoggedIn(),
+        FutureProvider<bool>(
+          create: (context) => _authService.checkIfUserLoggedIn(),
         ),
-        StreamProvider(
+        StreamProvider<Object>(
           create: (context)=> _authService.users,
+
         ),
       ],
       child: MaterialApp(

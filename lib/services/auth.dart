@@ -7,6 +7,8 @@ import 'package:customclaimsapp/services/admin_services.dart';
 import 'package:customclaimsapp/services/customer_services.dart';
 import 'package:customclaimsapp/services/shop_owner_services.dart';
 
+import 'dart:developer' as dev;
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
@@ -21,8 +23,10 @@ class AuthService extends ChangeNotifier {
   Customer _customer;
 
   final BehaviorSubject<Object> _users = BehaviorSubject<Object>();
+  final BehaviorSubject<bool> _isThereAUser = BehaviorSubject<bool>();
 
   Stream<Object> get users => _users.stream;
+  Stream<bool> get isThereAUser => _isThereAUser.stream;
 
 
 
@@ -30,84 +34,10 @@ class AuthService extends ChangeNotifier {
 
   ShopOwner get shop => _shopOwner;
 
-  Future<void> login(email, password) async {
-    try {
-      AuthResult authResult = await _auth.signInWithEmailAndPassword(email: email, password: password);
-      FirebaseUser firebaseUser = authResult.user;
-
-      IdTokenResult idTokenResult = await authResult.user.getIdToken();
-      String claim = idTokenResult.claims['claim'];
-
-      if(claim == 'admin'){
-        Admin admin = Admin(
-          uid: firebaseUser.uid,
-          email: firebaseUser.email,
-          claim: claim,
-          token: idTokenResult.token,
-          phoneNumber: firebaseUser.phoneNumber,);
-
-        AdminService adminService = AdminService(user: admin);
-        _users.sink.add(adminService);
-
-      }
-      else if(claim == 'shop'){
-
-        DocumentSnapshot doc = await Firestore.instance
-            .collection('Shops')
-            .document(firebaseUser.displayName)
-            .get();
-
-        String shopOwnerName = doc.data['shopOwnerName'];
-        //ToDo:check if this code needed
-
-
-//        List<Product> products =
-//        await shopServices.fetchAllProducts(shopName: firebaseUser.displayName);
-
-        ShopOwner shop = ShopOwner(
-          uid: firebaseUser.uid,
-          shopName: firebaseUser.displayName,
-          email: firebaseUser.email,
-          claim: claim,
-          token: idTokenResult.token,
-          phoneNumber: firebaseUser.phoneNumber,
-          shopOwnerName: shopOwnerName,
-          products: [],
-        );
-
-
-        ShopOwnerServices shopServices = ShopOwnerServices(user: shop);
-
-        _users.sink.add(shopServices);
-
-      }else{
-        Customer customer = Customer(
-          uid: firebaseUser.uid,
-          email: firebaseUser.email,
-          claim: claim,
-          phoneNumber: firebaseUser.phoneNumber,
-        );
-
-        CustomerServices customerServices = CustomerServices(user: customer);
-
-        _users.sink.add(customerServices);
-
-      }
-
-      notifyListeners();
-    } catch (e) {
-      print(e);
-    }
-  }
-
-  Future<bool> isLoggedIn() async{
-    var firebaseUser = await _auth.currentUser();
-
-    if(firebaseUser == null){
-      return false;
-    }
+  Future<void> createUser(FirebaseUser firebaseUser) async{
 
     IdTokenResult idTokenResult = await firebaseUser.getIdToken();
+
     String claim = idTokenResult.claims['claim'];
 
     if(claim == 'admin'){
@@ -120,16 +50,16 @@ class AuthService extends ChangeNotifier {
 
       AdminService adminService = AdminService(user: admin);
       _users.sink.add(adminService);
-      return true;
+
     }
     else if(claim == 'shop'){
 
-      DocumentSnapshot doc = await Firestore.instance
-          .collection('Shops')
-          .document(firebaseUser.displayName)
-          .get();
-
-      String shopOwnerName = doc.data['shopOwnerName'];
+//      DocumentSnapshot doc = await Firestore.instance
+//          .collection('Shops')
+//          .document(firebaseUser.displayName)
+//          .get();
+//
+//      String shopOwnerName = doc.data['shopOwnerName'];
       //ToDo:check if this code needed
 
 
@@ -143,15 +73,14 @@ class AuthService extends ChangeNotifier {
         claim: claim,
         token: idTokenResult.token,
         phoneNumber: firebaseUser.phoneNumber,
-        shopOwnerName: shopOwnerName,
+        shopOwnerName: 'shopOwnerName',
         products: [],
       );
-
 
       ShopOwnerServices shopServices = ShopOwnerServices(user: shop);
 
       _users.sink.add(shopServices);
-      return true;
+
     }else{
       Customer customer = Customer(
         uid: firebaseUser.uid,
@@ -161,11 +90,114 @@ class AuthService extends ChangeNotifier {
       );
 
       CustomerServices customerServices = CustomerServices(user: customer);
+      print(customerServices.user);
 
       _users.sink.add(customerServices);
-      return true;
+
     }
   }
+
+  Future<bool> checkIfUserLoggedIn() async{
+    _users.sink.add(true);
+
+    FirebaseUser firebaseUser = await _auth.currentUser();
+
+    if(firebaseUser != null){
+
+      await createUser(firebaseUser);
+
+      return true;
+    }else{
+      _users.add(null);
+      return false;
+    }
+
+  }
+
+  Future<void> login(email, password) async {
+    try {
+      _users.sink.add(true);
+      AuthResult authResult = await _auth.signInWithEmailAndPassword(email: email, password: password);
+      FirebaseUser firebaseUser = authResult.user;
+
+      await createUser(firebaseUser);
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> logout() async {
+    await _auth.signOut();
+    _users.sink.add(null);
+  }
+
+//  Future<bool> isLoggedIn() async{
+//        print('isloggedin() function is fired');
+//        var firebaseUser = await _auth.currentUser();
+//
+//        if(firebaseUser == null){
+//          return false;
+//        }
+//
+//        IdTokenResult idTokenResult = await firebaseUser.getIdToken();
+//        String claim = idTokenResult.claims['claim'];
+//
+//        if(claim == 'admin'){
+//          Admin admin = Admin(
+//            uid: firebaseUser.uid,
+//            email: firebaseUser.email,
+//            claim: claim,
+//            token: idTokenResult.token,
+//            phoneNumber: firebaseUser.phoneNumber,);
+//
+//          AdminService adminService = AdminService(user: admin);
+//          _users.sink.add(adminService);
+//          return true;
+//        }
+//        else if(claim == 'shop'){
+//
+//          DocumentSnapshot doc = await Firestore.instance
+//              .collection('Shops')
+//              .document(firebaseUser.displayName)
+//              .get();
+//
+//          String shopOwnerName = doc.data['shopOwnerName'];
+//          //ToDo:check if this code needed
+//
+//
+////        List<Product> products =
+////        await shopServices.fetchAllProducts(shopName: firebaseUser.displayName);
+//
+//      ShopOwner shop = ShopOwner(
+//        uid: firebaseUser.uid,
+//        shopName: firebaseUser.displayName,
+//        email: firebaseUser.email,
+//        claim: claim,
+//        token: idTokenResult.token,
+//        phoneNumber: firebaseUser.phoneNumber,
+//        shopOwnerName: shopOwnerName,
+//        products: [],
+//      );
+//
+//
+//      ShopOwnerServices shopServices = ShopOwnerServices(user: shop);
+//
+//      _users.sink.add(shopServices);
+//      return true;
+//    }else{
+//      Customer customer = Customer(
+//        uid: firebaseUser.uid,
+//        email: firebaseUser.email,
+//        claim: claim,
+//        phoneNumber: firebaseUser.phoneNumber,
+//      );
+//
+//      CustomerServices customerServices = CustomerServices(user: customer);
+//
+//      _users.sink.add(customerServices);
+//      return true;
+//    }
+//  }
 
 
 
@@ -224,51 +256,51 @@ class AuthService extends ChangeNotifier {
 
 
   //This method is used in AuthWidgetBuilder to check if there is a user logged in or not
-  Future<Object> getCurrentUser() async {
-    print('getCurrentUser method line 95 auth.dart is fired');
-    var user = await _auth.currentUser();
-    IdTokenResult idTokenResult = await user.getIdToken();
-    print('AuthService getCurrentUser 34 : ${idTokenResult.claims}');
-    Map claims = idTokenResult.claims;
-    if (claims['claim'] == 'admin') {
-      return Admin(
-          uid: user.uid,
-          email: user.email,
-          claim: claims['claim'],
-          token: idTokenResult.token,
-          phoneNumber: user.phoneNumber);
-    } else if (claims['claim'] == 'shop') {
-
-      DocumentSnapshot doc = await Firestore.instance
-          .collection('Shops')
-          .document(user.displayName)
-          .get();
-
-      String shopOwnerName = doc.data['shopOwnerName'];
-
-      ShopOwnerServices shopServices = ShopOwnerServices();
-
-//      List<Product> products =
-//          await shopServices.fetchAllProducts(shopName: user.displayName);
-
-      return ShopOwner(
-        uid: user.uid,
-        shopName: user.displayName,
-        email: user.email,
-        claim: claims['claim'],
-        token: idTokenResult.token,
-        phoneNumber: user.phoneNumber,
-        shopOwnerName: shopOwnerName,
-        products: [],
-      );
-    }
-    return Customer(
-      uid: user.uid,
-      email: user.email,
-      claim: claims['claim'],
-      phoneNumber: user.phoneNumber,
-    );
-  }
+//  Future<Object> getCurrentUser() async {
+//    print('getCurrentUser method line 95 auth.dart is fired');
+//    var user = await _auth.currentUser();
+//    IdTokenResult idTokenResult = await user.getIdToken();
+//    print('AuthService getCurrentUser 34 : ${idTokenResult.claims}');
+//    Map claims = idTokenResult.claims;
+//    if (claims['claim'] == 'admin') {
+//      return Admin(
+//          uid: user.uid,
+//          email: user.email,
+//          claim: claims['claim'],
+//          token: idTokenResult.token,
+//          phoneNumber: user.phoneNumber);
+//    } else if (claims['claim'] == 'shop') {
+//
+//      DocumentSnapshot doc = await Firestore.instance
+//          .collection('Shops')
+//          .document(user.displayName)
+//          .get();
+//
+//      String shopOwnerName = doc.data['shopOwnerName'];
+//
+//      ShopOwnerServices shopServices = ShopOwnerServices();
+//
+////      List<Product> products =
+////          await shopServices.fetchAllProducts(shopName: user.displayName);
+//
+//      return ShopOwner(
+//        uid: user.uid,
+//        shopName: user.displayName,
+//        email: user.email,
+//        claim: claims['claim'],
+//        token: idTokenResult.token,
+//        phoneNumber: user.phoneNumber,
+//        shopOwnerName: shopOwnerName,
+//        products: [],
+//      );
+//    }
+//    return Customer(
+//      uid: user.uid,
+//      email: user.email,
+//      claim: claims['claim'],
+//      phoneNumber: user.phoneNumber,
+//    );
+//  }
 
   //This method is used in AuthPage to register a new user
   Future<AuthResult> register(
@@ -300,9 +332,5 @@ class AuthService extends ChangeNotifier {
     });
   }
 
-  Future<void> logout() async {
-    await _auth.signOut();
-    _users.sink.add(null);
-    notifyListeners();
-  }
+
 }

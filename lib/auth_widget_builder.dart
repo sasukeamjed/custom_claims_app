@@ -1,5 +1,3 @@
-
-
 import 'dart:async';
 
 import 'package:customclaimsapp/auth_widget.dart';
@@ -16,7 +14,6 @@ import 'package:customclaimsapp/pages/customer_pages/main_customer_page.dart';
 import 'package:customclaimsapp/services/customer_services.dart';
 import 'package:customclaimsapp/services/shop_owner_services.dart';
 
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -29,89 +26,145 @@ class AuthWidgetBuilder extends StatefulWidget {
 class _AuthWidgetBuilderState extends State<AuthWidgetBuilder> {
   StreamSubscription _usersSubscription;
   AuthService authService;
+
   @override
   void initState() {
-    authService = Provider.of<AuthService>(context, listen: false);
-    _usersSubscription = authService.users.listen((usersServices) {
-      if(usersServices == null){
-        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context)=> AuthPage()), (route) => false);
-      }
-    });
+//    authService = Provider.of<AuthService>(context, listen: false);
+//    _usersSubscription = authService.users.listen((usersServices) {
+//      if(usersServices == null){
+//        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context)=> AuthPage()), (route) => false);
+//      }
+//    });
     super.initState();
   }
 
-
   @override
   Widget build(BuildContext context) {
-
-    final isLoggedIn = Provider.of<bool>(context);
-    print('this is is isLoggedIn value: $isLoggedIn');
-
-    if(isLoggedIn == null){
-      return Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
-      );
-    }else{
-      return StreamBuilder(
-        stream: authService.users,
-        builder: (BuildContext context, userService){
-          print('stream builder is rebuilt');
-          print(isLoggedIn);
-
-          if(isLoggedIn){
-            print(userService.data);
-            if(userService.data is AdminService){
-              return MainAdminPage();
-            }
-            else if(userService.data is ShopOwnerServices){
-              return MainShopPage();
-            }
-            else if(userService.data is CustomerServices){
-              return MainCustomerPage();
-            }
-            else{
-              return AuthPage();
-            }
-          }
-          return AuthPage();
-        },
-      );
-    }
-
+    AuthService _auth = Provider.of<AuthService>(context);
+    bool ifUser = Provider.of<bool>(context);
+    print('auth widget builder is build');
+    print('this is the data of the ifUser: $ifUser');
 
     return StreamBuilder(
-      stream: authService.users,
-      builder: (BuildContext context, userService){
-        print('stream builder is rebuilt');
-        print(isLoggedIn);
-        if(isLoggedIn == null){
+      stream: _auth.users,
+      builder: (BuildContext context, snapshot){
+        print(snapshot.connectionState);
+        print('Stream snapshot data: ${snapshot.data}');
+        if(!snapshot.hasData || snapshot.data == true){
           return Scaffold(
             body: Center(
               child: CircularProgressIndicator(),
             ),
           );
-        }else if(isLoggedIn){
-          print(userService.data);
-          if(userService.data is AdminService){
-            return MainAdminPage();
-          }
-          else if(userService.data is ShopOwnerServices){
-            return MainShopPage();
-          }
-          else if(userService.data is CustomerServices){
-            return MainCustomerPage();
-          }
-          else{
-            return AuthPage();
-          }
         }
+
+        if (snapshot.data is AdminService) {
+          return MainAdminPage();
+        } else if (snapshot.data is ShopOwnerServices) {
+          return MainShopPage();
+        } else if (snapshot.data is CustomerServices) {
+          return MainCustomerPage();
+        }
+
         return AuthPage();
+
       },
     );
+//    if(ifUser == null){
+//      return Scaffold(
+//        body: Center(
+//          child: CircularProgressIndicator(),
+//        ),
+//      );
+//
+//    }else if(ifUser){
+//      return StreamBuilder(
+//        stream: _auth.users,
+//        builder: (context, snapshot) {
+//          if(!snapshot.hasData){
+//            print('snapshot don\'t have a data');
+//          }
+//          print('this is the data of the stream 58: ${snapshot.data}');
+//          print('this is the data of the stream: ${snapshot.data.user}');
+//          if(snapshot.data == true){
+//            return Scaffold(
+//              body: Center(
+//                child: CircularProgressIndicator(),
+//              ),
+//            );
+//          }
+//
+//          if (snapshot.data is AdminService) {
+//            return MainAdminPage();
+//          } else if (snapshot.data is ShopOwnerServices) {
+//            return MainShopPage();
+//          } else if (snapshot.data is CustomerServices) {
+//            return MainCustomerPage();
+//          }
+//
+//          return AuthPage();
+//        },
+//      );
+//    }else{
+//      return AuthPage();
+//    }
 
 
+//    final isLoggedIn = Provider.of<bool>(context);
+    final users = Provider.of<Object>(context);
+//    print('this is is isLoggedIn value: $isLoggedIn');
+    print('this is is users value: $users');
+
+    if (users == null) {
+      return AuthPage();
+//      return Scaffold(
+//        body: Center(
+//          child: CircularProgressIndicator(),
+//        ),
+//      );
+    } else {
+      if (users != null) {
+        if (users is AdminService) {
+          return MainAdminPage();
+        } else if (users is ShopOwnerServices) {
+          return MainShopPage();
+        } else if (users is CustomerServices) {
+          return MainCustomerPage();
+        }
+      } else {
+        return AuthPage();
+      }
+    }
+
+//    return StreamBuilder(
+//      stream: authService.users,
+//      builder: (BuildContext context, userService){
+//        print('stream builder is rebuilt');
+//        print(isLoggedIn);
+//        if(isLoggedIn == null){
+//          return Scaffold(
+//            body: Center(
+//              child: CircularProgressIndicator(),
+//            ),
+//          );
+//        }else if(isLoggedIn){
+//          print(userService.data);
+//          if(userService.data is AdminService){
+//            return MainAdminPage();
+//          }
+//          else if(userService.data is ShopOwnerServices){
+//            return MainShopPage();
+//          }
+//          else if(userService.data is CustomerServices){
+//            return MainCustomerPage();
+//          }
+//          else{
+//            return AuthPage();
+//          }
+//        }
+//        return AuthPage();
+//      },
+//    );
   }
 
 //  @override
@@ -150,11 +203,10 @@ class _AuthWidgetBuilderState extends State<AuthWidgetBuilder> {
 //    );
 //  }
 
-  Widget redirect(String claim){
-    if(claim == 'admin'){
+  Widget redirect(String claim) {
+    if (claim == 'admin') {
       return MainAdminPage();
-    }
-    else if(claim == 'shop'){
+    } else if (claim == 'shop') {
       return MainShopPage();
     }
     return MainCustomerPage();

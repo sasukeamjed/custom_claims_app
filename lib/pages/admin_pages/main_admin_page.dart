@@ -13,8 +13,6 @@ class MainAdminPage extends StatefulWidget {
 
 class _MainAdminPageState extends State<MainAdminPage> {
 
-  AuthService _auth = AuthService();
-
 
   AdminService adminService;
 
@@ -41,7 +39,7 @@ class _MainAdminPageState extends State<MainAdminPage> {
   @override
   Widget build(BuildContext context) {
     print('Main Admin Page is Build');
-
+    final _authService = Provider.of<AuthService>(context);
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -50,7 +48,7 @@ class _MainAdminPageState extends State<MainAdminPage> {
           IconButton(
             icon: Icon(Icons.exit_to_app),
             onPressed: () async{
-              await _auth.logout();
+              await _authService.logout();
             },
           ),
         ],

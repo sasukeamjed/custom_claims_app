@@ -8,16 +8,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class MainShopPage extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     print('Main shop page is build');
     final _auth = Provider.of<AuthService>(context);
     final ShopOwnerServices shop = Provider.of<Object>(context);
 
-    if(shop.user == null){
-      print('this shit is null');
-    }
+    print('this shit is : ${shop.user}');
 
     return Scaffold(
       appBar: AppBar(
@@ -26,7 +23,7 @@ class MainShopPage extends StatelessWidget {
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.exit_to_app),
-            onPressed: () async{
+            onPressed: () async {
               await _auth.logout();
             },
           ),
@@ -41,22 +38,31 @@ class MainShopPage extends StatelessWidget {
             ),
             ListTile(
               title: Text('Shop Owner Name'),
-              subtitle: Text(shop.user == null ? 'Waiting...' : shop.user.shopOwnerName),
+              subtitle: Text(
+                  shop.user == null ? 'Waiting...' : shop.user.shopOwnerName),
             ),
             ListTile(
               title: Text('Shop Email'),
-              subtitle: Text(shop.user == null ? 'Waiting...' : shop.user.email),
+              subtitle:
+                  Text(shop.user == null ? 'Waiting...' : shop.user.email),
             ),
             ListTile(
               title: Text('Shop Phone Number'),
-              subtitle: Text(shop.user == null ? 'Waiting...' : shop.user.phoneNumber),
+              subtitle: Text(
+                  shop.user == null ? 'Waiting...' : shop.user.phoneNumber),
             ),
             ListTile(
-              title: Text(shop.user == null ? 'Waiting...' : 'Products Numbers'),
+              title:
+                  Text(shop.user == null ? 'Waiting...' : 'Products Numbers'),
               subtitle: Text(shop.user.products.length.toString()),
               trailing: Icon(Icons.keyboard_arrow_right),
-              onTap: (){
-                Navigator.push(context, MaterialPageRoute(builder: (context)=> ProductsPage(shop: shop.user,)));
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => ProductsPage(
+                              shop: shop.user,
+                            )));
               },
             ),
           ],
@@ -64,8 +70,13 @@ class MainShopPage extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
-        onPressed: (){
-          Navigator.push(context, MaterialPageRoute(builder: (context)=> AddProductPage(shopName: shop.user.shopName,)));
+        onPressed: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => AddProductPage(
+                        shopName: shop.user.shopName,
+                      )));
         },
       ),
     );
