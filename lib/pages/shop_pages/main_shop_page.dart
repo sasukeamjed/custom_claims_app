@@ -14,7 +14,13 @@ class MainShopPage extends StatelessWidget {
     final _auth = Provider.of<AuthService>(context);
     final ShopOwnerServices shop = Provider.of<Object>(context);
 
-    print('this shit is : ${shop.user}');
+    print('this shit is : ${shop}');
+
+    if(shop == null){
+      return Scaffold(
+        body: CircularProgressIndicator(),
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(

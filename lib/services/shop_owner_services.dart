@@ -43,6 +43,12 @@ class ShopOwnerServices extends ChangeNotifier {
     }
   }
 
+  Stream<List<Product>> fetchAllProducts(){
+
+  }
+
+
+
 //  Future<List<Product>> fetchAllProducts({@required String shopName}) async {
 //    print('shop_owner_services 36 => fetchAllProducts function is fired');
 //    List<Product> products = [];

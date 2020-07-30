@@ -47,15 +47,18 @@ class _AuthWidgetBuilderState extends State<AuthWidgetBuilder> {
 
     return StreamBuilder(
       stream: _auth.users,
-      builder: (BuildContext context, snapshot){
+      builder: (BuildContext context, snapshot) {
         print(snapshot.connectionState);
         print('Stream snapshot data: ${snapshot.data}');
-        if(!snapshot.hasData || snapshot.data == true){
+        if(ifUser == null || snapshot.data == true){
           return Scaffold(
             body: Center(
               child: CircularProgressIndicator(),
             ),
           );
+        }
+        else if(snapshot.data == null){
+          return AuthPage();
         }
 
         if (snapshot.data is AdminService) {
@@ -65,11 +68,11 @@ class _AuthWidgetBuilderState extends State<AuthWidgetBuilder> {
         } else if (snapshot.data is CustomerServices) {
           return MainCustomerPage();
         }
-
         return AuthPage();
 
       },
     );
+
 //    if(ifUser == null){
 //      return Scaffold(
 //        body: Center(
@@ -108,7 +111,6 @@ class _AuthWidgetBuilderState extends State<AuthWidgetBuilder> {
 //    }else{
 //      return AuthPage();
 //    }
-
 
 //    final isLoggedIn = Provider.of<bool>(context);
     final users = Provider.of<Object>(context);
