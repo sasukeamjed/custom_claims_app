@@ -101,17 +101,18 @@ class AuthService extends ChangeNotifier {
   }
 
   Future<bool> checkIfUserLoggedIn() async{
-    _users.sink.add(true);
+    _fetchingData.sink.add(true);
 
     FirebaseUser firebaseUser = await _auth.currentUser();
 
     if(firebaseUser != null){
 
       await _createUser(firebaseUser);
-
+      _fetchingData.sink.add(false);
       return true;
     }else{
       _users.add(null);
+      _fetchingData.sink.add(false);
       return false;
     }
 
@@ -119,14 +120,14 @@ class AuthService extends ChangeNotifier {
 
   Future<void> login(email, password) async {
     try {
-      _users.sink.add(true);
+      _fetchingData.sink.add(true);
       AuthResult authResult = await _auth.signInWithEmailAndPassword(email: email, password: password);
       FirebaseUser firebaseUser = authResult.user;
 
       await _createUser(firebaseUser);
-      _users.sink.add(false);
+      _fetchingData.sink.add(false);
     } catch (e) {
-      _users.sink.add(false);
+      _fetchingData.sink.add(false);
       print(e);
     }
   }

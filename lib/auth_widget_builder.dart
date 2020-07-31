@@ -45,33 +45,38 @@ class _AuthWidgetBuilderState extends State<AuthWidgetBuilder> {
     print('auth widget builder is build');
     print('this is the data of the ifUser: $ifUser');
 
-    return StreamBuilder(
-      stream: _auth.users,
-      builder: (BuildContext context, snapshot) {
-        print(snapshot.connectionState);
-        print('Stream snapshot data: ${snapshot.data}');
-        if(ifUser == null || snapshot.data == true){
-          return Scaffold(
-            body: Center(
-              child: CircularProgressIndicator(),
-            ),
+    return StreamBuilder<bool>(
+        stream: _auth.isFetchingData,
+        builder: (context, snapshot) {
+          if(snapshot.data == true){
+            return Scaffold(
+              body: Center(
+                child: CircularProgressIndicator(),
+              ),
+            );
+          }
+
+          return StreamBuilder(
+            stream: _auth.users,
+            builder: (BuildContext context, snapshot) {
+
+              print('Stream snapshot data: ${snapshot.data}');
+
+              if (snapshot.data is AdminService) {
+                return MainAdminPage();
+              } else if (snapshot.data is ShopOwnerServices) {
+                return MainShopPage();
+              } else if (snapshot.data is CustomerServices) {
+                return MainCustomerPage();
+              }
+              return AuthPage();
+
+            },
           );
-        }
-        else if(snapshot.data == null){
-          return AuthPage();
-        }
 
-        if (snapshot.data is AdminService) {
-          return MainAdminPage();
-        } else if (snapshot.data is ShopOwnerServices) {
-          return MainShopPage();
-        } else if (snapshot.data is CustomerServices) {
-          return MainCustomerPage();
         }
-        return AuthPage();
-
-      },
     );
+
 
 //    if(ifUser == null){
 //      return Scaffold(

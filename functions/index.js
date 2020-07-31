@@ -10,7 +10,7 @@ const db = admin.firestore();
 //
 
 exports.createNewUser = functions.https.onCall(async (data, context)=> {
-  console.log(data['idToken']);
+  console.log('this is the idToken in creatUser Method' + data['idToken']);
   if(data['idToken'] === undefined){
     console.log("add customer function is fired");
     return addCustomer(data['email'], data['password'],data['displayName'], data['phoneNumber']);
@@ -22,6 +22,7 @@ exports.createNewUser = functions.https.onCall(async (data, context)=> {
 
 
 const addAdminOrShop = async(idToken, displayName, email, shopName, fullName, address, phoneNumber)=>{
+  
   return admin.auth().verifyIdToken(idToken).then(async (decodedToken)=>{
     if(decodedToken.claim === 'admin'){
       if(shopName === null){
@@ -46,10 +47,23 @@ const addCustomer = async (email, password,cusotmerName ,phoneNumber)=>{
     // photoURL: null,
   }).then(async (userData) => {
     // console.log(userData);
-    return await admin.auth().setCustomUserClaims(userData.uid, { claim: 'customer' });
+    user = userData;
+    return await admin.auth().setCustomUserClaims(user.uid, { claim: 'customer' });
+  }).then((res)=>{
+    return user;
   }).catch(e => {
-    console.log(e);
-    return e;
+    console.log(e.message);
+    if (e.message === '501') {
+      return {
+        error: e.message,
+        message: 'this is a 501 error'
+      }
+    } else {
+      return {
+        error: e.message,
+        message: 'this is a normal error'
+      }
+    }
   });
 };
 
@@ -70,7 +84,7 @@ const addAdmin = async (email, phoneNumber, fullName) => {
     return {};
 
   }).then((res) => {
-    console.log('user with ShopOwner claim was created!!! hope it worked');
+    console.log('user with Admin claim was created!!! hope it worked');
     return user;
   }).catch(e => {
     console.log(e.message);
