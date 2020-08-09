@@ -1,10 +1,5 @@
 import 'dart:async';
 
-import 'package:customclaimsapp/auth_widget.dart';
-import 'package:customclaimsapp/models/users/main_user.dart';
-import 'package:customclaimsapp/models/users/secondery_users/admin_model.dart';
-import 'package:customclaimsapp/models/users/secondery_users/customer_model.dart';
-import 'package:customclaimsapp/models/users/secondery_users/shop_owner_model.dart';
 import 'package:customclaimsapp/pages/admin_pages/main_admin_page.dart';
 import 'package:customclaimsapp/pages/auth_pages/auth_page.dart';
 import 'package:customclaimsapp/services/admin_services.dart';
@@ -14,7 +9,6 @@ import 'package:customclaimsapp/pages/customer_pages/main_customer_page.dart';
 import 'package:customclaimsapp/services/customer_services.dart';
 import 'package:customclaimsapp/services/shop_owner_services.dart';
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -39,15 +33,22 @@ class _AuthWidgetBuilderState extends State<AuthWidgetBuilder> {
   }
 
   @override
+  void dispose() {
+    print('dispose method is called auth widget builder 43');
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     AuthService _auth = Provider.of<AuthService>(context);
     bool ifUser = Provider.of<bool>(context);
-    print('auth widget builder is build');
-    print('this is the data of the ifUser: $ifUser');
+//    print('auth widget builder is build');
+//    print('this is the data of the ifUser: $ifUser');
 
     return StreamBuilder<bool>(
         stream: _auth.isFetchingData,
         builder: (context, snapshot) {
+          print('auth_widget_builder 57 Stream snapshot data: ${snapshot.data}');
           if(snapshot.data == true){
             return Scaffold(
               body: Center(
@@ -60,16 +61,25 @@ class _AuthWidgetBuilderState extends State<AuthWidgetBuilder> {
             stream: _auth.users,
             builder: (BuildContext context, snapshot) {
 
-              print('Stream snapshot data: ${snapshot.data}');
-
-              if (snapshot.data is AdminService) {
-                return MainAdminPage();
-              } else if (snapshot.data is ShopOwnerServices) {
-                return MainShopPage();
-              } else if (snapshot.data is CustomerServices) {
-                return MainCustomerPage();
+//              print('Stream snapshot data: ${snapshot.data}');
+              print('auth widget builder 70 Stream connection state => ${snapshot.connectionState}');
+              if(ConnectionState.active == snapshot.connectionState){
+                if (snapshot.data is AdminService) {
+                  return MainAdminPage();
+                } else if (snapshot.data is ShopOwnerServices) {
+                  return MainShopPage();
+                } else if (snapshot.data is CustomerServices) {
+                  return MainCustomerPage();
+                }
+                else{
+                  return AuthPage();
+                }
               }
-              return AuthPage();
+              return Scaffold(
+                body: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              );
 
             },
           );

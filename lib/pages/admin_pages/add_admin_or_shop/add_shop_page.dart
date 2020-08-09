@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:customclaimsapp/models/users/main_user.dart';
 import 'package:customclaimsapp/services/admin_services.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -33,8 +32,8 @@ class _AddShopPageState extends State<AddShopPage> {
   @override
   Widget build(BuildContext context) {
     print('Add Shop Page is Build');
-    final adminService = Provider.of<AdminService>(context);
-    final currentUser = Provider.of<MainUser>(context);
+    final AdminService adminService = Provider.of<Object>(context);
+
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 20),
       child: SingleChildScrollView(
@@ -119,7 +118,7 @@ class _AddShopPageState extends State<AddShopPage> {
               child: Text("Add Shop"),
               onPressed: ()async {
                 await adminService.registerNewShop(
-                    idToken: currentUser.token,
+                    idToken: adminService.user.token,
                     shopName: _shopName.text,
                     shopOwnerName: _shopOwnerName.text,
                     shopOwnerEmail: _shopOwnerEmail.text,

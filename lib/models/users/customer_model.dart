@@ -1,4 +1,3 @@
-import 'package:customclaimsapp/models/users/main_user.dart';
 import 'package:flutter/cupertino.dart';
 
 class Customer{

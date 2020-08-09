@@ -74,7 +74,7 @@ class _AddProductPageState extends State<AddProductPage> {
 
   @override
   Widget build(BuildContext context) {
-    final services = Provider.of<ShopOwnerServices>(context);
+    final ShopOwnerServices services = Provider.of<Object>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text('Add Product'),

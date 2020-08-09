@@ -2,7 +2,7 @@ import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:customclaimsapp/models/product_model.dart';
-import 'package:customclaimsapp/models/users/secondery_users/shop_owner_model.dart';
+import 'package:customclaimsapp/models/users/shop_owner_model.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';

@@ -15,20 +15,20 @@ exports.createNewUser = functions.https.onCall(async (data, context)=> {
     console.log("add customer function is fired");
     return addCustomer(data['email'], data['password'],data['displayName'], data['phoneNumber']);
   }
-  return addAdminOrShop(data['idToken'], data['displayName'], data['email'], data['phoneNumber'], data['fullName'], data['shopImageUrl']);
+  return addAdminOrShop(data['idToken'], data['displayName'], data['email'], data['shopName'], data['fullName'], data['phoneNumber'],data['shopImageUrl']);
 });
 
 
 
 
-const addAdminOrShop = async(idToken, displayName, email, shopName, fullName, address, phoneNumber)=>{
+const addAdminOrShop = async(idToken, displayName, email, shopName, fullName,  phoneNumber, shopImageUrl)=>{
   
   return admin.auth().verifyIdToken(idToken).then(async (decodedToken)=>{
     if(decodedToken.claim === 'admin'){
       if(shopName === null){
         return addAdmin(email, phoneNumber, fullName);
       }
-      return addShop(displayName, email, phoneNumber, fullName, shopImageUrl, address);
+      return addShop(displayName, email, phoneNumber, fullName, shopImageUrl);
     }else{
       throw new Error('Unauthrized line 72');
     }
@@ -108,10 +108,11 @@ const addShop = async (
   phoneNumber,
   fullName,
   shopImageUrl,
-  address,
 ) => {
   var user;
   var shopsCollection = db.collection('Shops');
+
+  console.log('add shop method => ' + shopImageUrl);
 
   let doc = await shopsCollection.doc(shopName).get();
 
@@ -133,15 +134,17 @@ const addShop = async (
     await admin.auth().setCustomUserClaims(newUser.uid, { claim: 'shop' });
     user = newUser;
     return {};
-  }).then(() => {
+  })
+  // .then(() => {
 
-    return shopsCollection.doc(shopName).set({
-      shopName,
-      fullName,
-      address,
-    });
+  //   return shopsCollection.doc(shopName).set({
+  //     shopName,
+  //     fullName,
+  //     address,
+  //   });
 
-  }).then((res) => {
+  // })
+  .then((res) => {
     console.log('user with ShopOwner claim was created!!! hope it worked');
     return user;
   }).catch(e => {

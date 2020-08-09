@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:cloud_functions/cloud_functions.dart';
-import 'package:customclaimsapp/models/users/secondery_users/admin_model.dart';
+import 'file:///C:/flutter_lessons/wrood_project/custom_claims_app/lib/models/users/admin_model.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -59,6 +59,7 @@ class AdminService {
         .call({
       "idToken": idToken,
       "displayName": shopName,
+      "shopName" : shopName,
       "email": shopOwnerEmail,
       "shopImageUrl": shopImageUrl,
       "fullName": shopOwnerName,

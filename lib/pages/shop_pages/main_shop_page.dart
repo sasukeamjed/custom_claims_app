@@ -1,5 +1,3 @@
-import 'package:customclaimsapp/models/users/main_user.dart';
-import 'package:customclaimsapp/models/users/secondery_users/shop_owner_model.dart';
 import 'package:customclaimsapp/pages/shop_pages/add_product_page.dart';
 import 'package:customclaimsapp/pages/shop_pages/products_page.dart';
 import 'package:customclaimsapp/services/auth.dart';

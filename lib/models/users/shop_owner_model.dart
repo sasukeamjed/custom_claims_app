@@ -1,5 +1,4 @@
 import 'package:customclaimsapp/models/product_model.dart';
-import 'package:customclaimsapp/models/users/main_user.dart';
 import 'package:flutter/cupertino.dart';
 
 

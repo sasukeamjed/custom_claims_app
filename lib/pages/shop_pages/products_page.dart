@@ -1,5 +1,5 @@
 import 'package:customclaimsapp/models/product_model.dart';
-import 'package:customclaimsapp/models/users/secondery_users/shop_owner_model.dart';
+import 'package:customclaimsapp/models/users/shop_owner_model.dart';
 import 'package:customclaimsapp/pages/shop_pages/product_edit_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

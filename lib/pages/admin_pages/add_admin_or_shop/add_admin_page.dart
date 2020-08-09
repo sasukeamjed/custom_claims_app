@@ -1,4 +1,3 @@
-import 'package:customclaimsapp/models/users/main_user.dart';
 import 'package:customclaimsapp/services/admin_services.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

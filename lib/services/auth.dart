@@ -1,8 +1,8 @@
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:customclaimsapp/models/product_model.dart';
-import 'package:customclaimsapp/models/users/secondery_users/admin_model.dart';
-import 'package:customclaimsapp/models/users/secondery_users/customer_model.dart';
-import 'package:customclaimsapp/models/users/secondery_users/shop_owner_model.dart';
+import 'file:///C:/flutter_lessons/wrood_project/custom_claims_app/lib/models/users/admin_model.dart';
+import 'package:customclaimsapp/models/users/customer_model.dart';
+import 'package:customclaimsapp/models/users/shop_owner_model.dart';
 import 'package:customclaimsapp/services/admin_services.dart';
 import 'package:customclaimsapp/services/customer_services.dart';
 import 'package:customclaimsapp/services/shop_owner_services.dart';
@@ -24,10 +24,12 @@ class AuthService extends ChangeNotifier {
 
   final BehaviorSubject<Object> _users = BehaviorSubject<Object>();
   final BehaviorSubject<bool> _fetchingData = BehaviorSubject<bool>();
+  final BehaviorSubject<bool> _registeringUser = BehaviorSubject<bool>();
 
 
   Stream<Object> get users => _users.stream;
   Stream<bool> get isFetchingData => _fetchingData.stream;
+  Stream<bool> get registeringUser => _registeringUser.stream;
 
 
 
@@ -145,7 +147,7 @@ class AuthService extends ChangeNotifier {
       @required String email,
       @required String password,
       @required String phoneNumber}) async {
-    _fetchingData.sink.add(true);
+    _registeringUser.sink.add(true);
     String shopImageUrl =
         'https://firebasestorage.googleapis.com/v0/b/fir-auth-test-a160f.appspot.com/o/default_shop_img%2Fshop.png?alt=media&token=28f490a6-da3f-48c0-b18a-bcfd676d05f9';
 
@@ -165,12 +167,13 @@ class AuthService extends ChangeNotifier {
       "phoneNumber": phoneNumber,
     }).then((res) {
       print('auth.dart 164 newly created user ${res.data}');
-      _fetchingData.sink.add(false);
+      _registeringUser.sink.add(false);
       if(res.data['error'] != null){
         throw(res.data['error']);
       }
       return res.data;
     }).catchError((e) {
+      _registeringUser.sink.add(false);
       throw(e);
     });
   }

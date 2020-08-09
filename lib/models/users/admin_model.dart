@@ -1,4 +1,3 @@
-import 'package:customclaimsapp/models/users/main_user.dart';
 import 'package:flutter/cupertino.dart';
 
 @immutable
@@ -11,5 +10,7 @@ class Admin {
   final String phoneNumber;
 
   Admin({@required this.uid, @required this.email, @required this.claim, @required this.phoneNumber, this.token});
+
+
 
 }
