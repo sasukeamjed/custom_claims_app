@@ -25,4 +25,15 @@ class ShopOwner{
 //      @required this.shop,
       @required this.products,
       this.token,});
+
+  Map<String, dynamic> toMap(){
+    return {
+      'uid' : uid,
+      'email' : email,
+      'claim' : claim,
+      'phoneNumber' : phoneNumber,
+      'shopName' : shopName,
+      'shopOwnerName' : shopOwnerName,
+    };
+  }
 }

@@ -180,7 +180,7 @@ class _AuthPageState extends State<AuthPage> {
                       currentFocus.unfocus();
                     }
                     try {
-                      var result = await auth.register(
+                      var result = await auth.registerNewCustomer(
                         username: userName.text,
                         email: textEmail.text,
                         password: textPassword.text,

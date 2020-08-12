@@ -8,6 +8,15 @@ class Customer{
 
   Customer({@required this.uid, @required this.email, @required this.claim,@required this.phoneNumber});
 
+  Map<String, dynamic> toMap(){
+    return {
+      'uid' : uid,
+      'email' : email,
+      'claim' : claim,
+      'phoneNumber' : phoneNumber,
+    };
+  }
+
   @override
   String toString() {
     return 'Customer Instance {uid: $uid, email: $email, claim: $claim, phoneNumber: $phoneNumber}';

@@ -42,8 +42,18 @@ class AddAdminPage extends StatelessWidget {
             RaisedButton(
               child: Text('Add The Admin'),
               onPressed: () async {
-                await adminService.addAdmin(idToken: adminService.user.token,
+                FocusScopeNode currentFocus = FocusScope.of(context);
+                if(!currentFocus.hasPrimaryFocus){
+                  currentFocus.unfocus();
+                }
+                await adminService.registerNewAdmin(idToken: adminService.user.token,
                    fullName: _fullName.text, email: _emailText.text, phoneNumber: _phoneNumber.text);
+              },
+            ),
+            StreamBuilder<bool>(
+              stream: adminService.registeringUser,
+              builder: (BuildContext context, snapshot){
+                return snapshot.data == true ? CircularProgressIndicator() : Container();
               },
             ),
           ],

@@ -14,9 +14,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:customclaimsapp/services/firestore_services.dart';
 
 class AuthService extends ChangeNotifier {
 //  bool fetchingData = false;
+
+
 
   ShopOwner _shopOwner;
   Admin _admin;
@@ -41,6 +44,8 @@ class AuthService extends ChangeNotifier {
 
   Future<void> _createUser(FirebaseUser firebaseUser) async{
 
+    FirestoreServices firestoreServices = FirestoreServices();
+
     IdTokenResult idTokenResult = await firebaseUser.getIdToken();
 
     String claim = idTokenResult.claims['claim'];
@@ -52,6 +57,20 @@ class AuthService extends ChangeNotifier {
         claim: claim,
         token: idTokenResult.token,
         phoneNumber: firebaseUser.phoneNumber,);
+
+
+      print('auth.dart 179 newly created user ${res.data['user']}');
+      try{
+        if(res.data['claim'] == 'customer'){
+          await firestoreServices.createCustomer(uid: res.data['user']['uid'], email: res.data['user']['email'], phoneNumber: res.data['user']['phoneNumber'], claim: res.data['claim']);
+        }else{
+          throw "Customer is not saved in firestore database";
+        }
+      }catch(e){
+        throw e;
+      }
+
+
 
       AdminService adminService = AdminService(user: admin);
       _users.sink.add(adminService);
@@ -142,14 +161,14 @@ class AuthService extends ChangeNotifier {
 
 
   //This method is used in AuthPage to register a new user
-  Future<dynamic> register(
+  Future<dynamic> registerNewCustomer(
       {@required String username,
       @required String email,
       @required String password,
       @required String phoneNumber}) async {
+
     _registeringUser.sink.add(true);
-    String shopImageUrl =
-        'https://firebasestorage.googleapis.com/v0/b/fir-auth-test-a160f.appspot.com/o/default_shop_img%2Fshop.png?alt=media&token=28f490a6-da3f-48c0-b18a-bcfd676d05f9';
+
 
 //    if (shopImage != null) {
 //      StorageUploadTask uploadTask = _firebaseStorage
@@ -165,12 +184,25 @@ class AuthService extends ChangeNotifier {
       "password": password,
       "displayName": username,
       "phoneNumber": phoneNumber,
-    }).then((res) {
-      print('auth.dart 164 newly created user ${res.data}');
-      _registeringUser.sink.add(false);
+    }).then((res) async {
+
       if(res.data['error'] != null){
         throw(res.data['error']);
       }
+      FirestoreServices firestoreServices = FirestoreServices();
+      print('auth.dart 179 newly created user ${res.data['user']}');
+      try{
+        if(res.data['claim'] == 'customer'){
+          await firestoreServices.createCustomer(uid: res.data['user']['uid'], email: res.data['user']['email'], phoneNumber: res.data['user']['phoneNumber'], claim: res.data['claim']);
+        }else{
+          throw "Customer is not saved in firestore database";
+        }
+      }catch(e){
+        throw e;
+      }
+
+      _registeringUser.sink.add(false);
+
       return res.data;
     }).catchError((e) {
       _registeringUser.sink.add(false);

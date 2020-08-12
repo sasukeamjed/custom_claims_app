@@ -9,31 +9,39 @@ class AddUserPage extends StatelessWidget{
     print('Add User Page is Build');
     return Scaffold(
       backgroundColor: Colors.brown,
-      body: DefaultTabController(
-        length: 2,
-        child: Column(
-          children: <Widget>[
-            Container(
-              constraints: BoxConstraints(maxHeight: 150.0),
-              child: Material(
-                color: Theme.of(context).accentColor,
-                child: TabBar(
-                  tabs: [
-                    Tab(icon: Icon(Icons.supervised_user_circle)),
-                    Tab(icon: Icon(Icons.shop)),
+      body: GestureDetector(
+        onTap: (){
+          FocusScopeNode currentFocus = FocusScope.of(context);
+          if(!currentFocus.hasPrimaryFocus){
+            currentFocus.unfocus();
+          }
+        },
+        child: DefaultTabController(
+          length: 2,
+          child: Column(
+            children: <Widget>[
+              Container(
+                constraints: BoxConstraints(maxHeight: 150.0),
+                child: Material(
+                  color: Theme.of(context).accentColor,
+                  child: TabBar(
+                    tabs: [
+                      Tab(icon: Icon(Icons.supervised_user_circle)),
+                      Tab(icon: Icon(Icons.shop)),
+                    ],
+                  ),
+                ),
+              ),
+              Expanded(
+                child: TabBarView(
+                  children: [
+                    AddAdminPage(),
+                    AddShopPage(),
                   ],
                 ),
               ),
-            ),
-            Expanded(
-              child: TabBarView(
-                children: [
-                  AddAdminPage(),
-                  AddShopPage(),
-                ],
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

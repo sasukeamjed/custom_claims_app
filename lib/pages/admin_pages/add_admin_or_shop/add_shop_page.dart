@@ -114,16 +114,28 @@ class _AddShopPageState extends State<AddShopPage> {
             SizedBox(
               height: 30,
             ),
-            RaisedButton(
-              child: Text("Add Shop"),
-              onPressed: ()async {
-                await adminService.registerNewShop(
-                    idToken: adminService.user.token,
-                    shopName: _shopName.text,
-                    shopOwnerName: _shopOwnerName.text,
-                    shopOwnerEmail: _shopOwnerEmail.text,
-                    shopOwnerPhoneNumber: _shopPhoneNumber.text);
-              },
+            StreamBuilder<bool>(
+              stream: adminService.registeringUser,
+              builder: (context, snapshot) {
+                return snapshot.data != true ?
+                RaisedButton(
+                  child: Text("Add Shop"),
+                  onPressed: ()async {
+
+                    FocusScopeNode currentFocus = FocusScope.of(context);
+                    if(!currentFocus.hasPrimaryFocus){
+                      currentFocus.unfocus();
+                    }
+
+                    await adminService.registerNewShop(
+                        idToken: adminService.user.token,
+                        shopName: _shopName.text,
+                        shopOwnerName: _shopOwnerName.text,
+                        shopOwnerEmail: _shopOwnerEmail.text,
+                        shopOwnerPhoneNumber: _shopPhoneNumber.text);
+                  },
+                ) : CircularProgressIndicator();
+              }
             ),
           ],
         ),

@@ -24,13 +24,14 @@ exports.createNewUser = functions.https.onCall(async (data, context)=> {
 const addAdminOrShop = async(idToken, displayName, email, shopName, fullName,  phoneNumber, shopImageUrl)=>{
   
   return admin.auth().verifyIdToken(idToken).then(async (decodedToken)=>{
+    console.log('decoded token: ' , decodedToken);
     if(decodedToken.claim === 'admin'){
-      if(shopName === null){
+      if(shopName === undefined){
         return addAdmin(email, phoneNumber, fullName);
       }
       return addShop(displayName, email, phoneNumber, fullName, shopImageUrl);
     }else{
-      throw new Error('Unauthrized line 72');
+      throw new Error('Unauthrized line 33');
     }
   });
 };
@@ -50,7 +51,11 @@ const addCustomer = async (email, password,cusotmerName ,phoneNumber)=>{
     user = userData;
     return await admin.auth().setCustomUserClaims(user.uid, { claim: 'customer' });
   }).then((res)=>{
-    return user;
+    return {
+      user,
+      claim : 'customer',
+    };
+    // return user;
   }).catch(e => {
     console.log(e.message);
     if (e.message === '501') {
@@ -85,7 +90,11 @@ const addAdmin = async (email, phoneNumber, fullName) => {
 
   }).then((res) => {
     console.log('user with Admin claim was created!!! hope it worked');
-    return user;
+    return {
+      claim : 'admin',
+      user,
+    };
+    // return user;
   }).catch(e => {
     console.log(e.message);
     if (e.message === '501') {
@@ -106,21 +115,14 @@ const addShop = async (
   shopName,
   email,
   phoneNumber,
-  fullName,
+  shopOwnerName,
   shopImageUrl,
 ) => {
   var user;
-  var shopsCollection = db.collection('Shops');
 
   console.log('add shop method => ' + shopImageUrl);
 
-  let doc = await shopsCollection.doc(shopName).get();
 
-  if (doc.exists) {
-    console.log('Shop Name already exist');
-    throw new Error('Shop Name already exist');
-  }
-    
   return admin.auth().createUser({
     email: email,
     phoneNumber: '+968' + phoneNumber,
@@ -146,7 +148,12 @@ const addShop = async (
   // })
   .then((res) => {
     console.log('user with ShopOwner claim was created!!! hope it worked');
-    return user;
+    // return user;
+    return {
+      claim : 'shop',
+      user,
+      shopOwnerName,
+    };
   }).catch(e => {
     console.log(e.message);
     if (e.message === '501') {
