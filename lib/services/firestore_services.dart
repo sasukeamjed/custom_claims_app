@@ -10,37 +10,39 @@ class FirestoreServices{
 
   //ToDo: Register user data in firestore if not exit
   Future<bool> _checkIfUserDataExit(String userId, String claim) async{
-    var userCollection;
-
+    DocumentSnapshot doc;
+    print('firestore_services.dart 14 claim => $claim');
     if(claim == 'admin'){
-      userCollection = await _db.collection('admins').document(userId).get();
-      if(userCollection != null){
+      doc = await _db.collection('admins').document(userId).get();
+      print('firestore_services.dart 17 userDat => ${doc.data}.');
+      if(doc.data != null){
         return true;
       }else{
         return false;
       }
     }else if(claim == 'shop'){
-      userCollection = await _db.collection('shops').document(userId).get();
-      if(userCollection != null){
+      doc = await _db.collection('shops').document(userId).get();
+      if(doc.data != null){
         return true;
       }else{
         return false;
       }
     }else if(claim == 'customer'){
-      userCollection = await _db.collection('customers').document(userId).get();
-      if(userCollection != null){
+      doc = await _db.collection('customers').document(userId).get();
+      if(doc.data != null){
         return true;
       }else{
         return false;
       }
     }else{
-      userCollection = null;
+      doc = null;
       throw "firestore services error claim is not found";
     }
   }
 
   Future<void> createAdmin({@required String uid, @required String email, @required String phoneNumber, @required String claim}) async{
     bool userData = await _checkIfUserDataExit(uid, claim);
+    print('firestore_services.dart 45 userData => $userData');
     if(userData){
       return null;
     }

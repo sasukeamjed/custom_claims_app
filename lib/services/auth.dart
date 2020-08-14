@@ -42,8 +42,8 @@ class AuthService extends ChangeNotifier {
 
   
 
-  Future<void> _createUser(FirebaseUser firebaseUser) async{
-
+  Future<void> _createInstanceForUserService(FirebaseUser firebaseUser) async{
+    print('auth.dart 46 _createInstanceForUserService firebase user is => ${firebaseUser.phoneNumber}');
     FirestoreServices firestoreServices = FirestoreServices();
 
     IdTokenResult idTokenResult = await firebaseUser.getIdToken();
@@ -59,12 +59,13 @@ class AuthService extends ChangeNotifier {
         phoneNumber: firebaseUser.phoneNumber,);
 
 
-      print('auth.dart 179 newly created user ${res.data['user']}');
+//      print('auth.dart 179 newly created user ${res.data['user']}');
       try{
-        if(res.data['claim'] == 'customer'){
-          await firestoreServices.createCustomer(uid: res.data['user']['uid'], email: res.data['user']['email'], phoneNumber: res.data['user']['phoneNumber'], claim: res.data['claim']);
+        if(claim == 'admin'){
+          await firestoreServices.createAdmin(uid: firebaseUser.uid, email: firebaseUser.email, phoneNumber: firebaseUser.phoneNumber, claim: claim);
+          print('auth.dart 66 admin saved in firestore database');
         }else{
-          throw "Customer is not saved in firestore database";
+          throw "auth.dart 68 admin is not saved in firestore database, maybe it is already saved";
         }
       }catch(e){
         throw e;
@@ -84,7 +85,7 @@ class AuthService extends ChangeNotifier {
 //          .get();
 //
 //      String shopOwnerName = doc.data['shopOwnerName'];
-      //ToDo:check if this code needed
+      //ToDo:get shop data
 
 
 //        List<Product> products =
@@ -97,9 +98,20 @@ class AuthService extends ChangeNotifier {
         claim: claim,
         token: idTokenResult.token,
         phoneNumber: firebaseUser.phoneNumber,
-        shopOwnerName: 'shopOwnerName',
+        shopOwnerName: 'shopOwner',
         products: [],
       );
+
+      try{
+        if(claim == 'shop'){
+          await firestoreServices.createShop(uid: firebaseUser.uid, email: firebaseUser.email, phoneNumber: firebaseUser.phoneNumber, claim: claim, shopName: firebaseUser.displayName, shopOwnerName: "shopOwner");
+          print('auth.dart 108 shop saved in firestore database');
+        }else{
+          throw "auth.dart 110 shop is not saved in firestore database, maybe it is already saved";
+        }
+      }catch(e){
+        throw e;
+      }
 
       ShopOwnerServices shopServices = ShopOwnerServices(user: shop);
 
@@ -112,6 +124,17 @@ class AuthService extends ChangeNotifier {
         claim: claim,
         phoneNumber: firebaseUser.phoneNumber,
       );
+
+      try{
+        if(claim == 'customer'){
+          await firestoreServices.createCustomer(uid: firebaseUser.uid, email: firebaseUser.email, phoneNumber: firebaseUser.phoneNumber, claim: claim);
+          print('auth.dart 131 customer saved in firestore database');
+        }else{
+          throw "auth.dart 133 customer is not saved in firestore database, maybe it is already saved";
+        }
+      }catch(e){
+        throw e;
+      }
 
       CustomerServices customerServices = CustomerServices(user: customer);
       print(customerServices.user);
@@ -128,7 +151,7 @@ class AuthService extends ChangeNotifier {
 
     if(firebaseUser != null){
 
-      await _createUser(firebaseUser);
+      await _createInstanceForUserService(firebaseUser);
       _fetchingData.sink.add(false);
       return true;
     }else{
@@ -145,7 +168,7 @@ class AuthService extends ChangeNotifier {
       AuthResult authResult = await _auth.signInWithEmailAndPassword(email: email, password: password);
       FirebaseUser firebaseUser = authResult.user;
 
-      await _createUser(firebaseUser);
+      await _createInstanceForUserService(firebaseUser);
       _fetchingData.sink.add(false);
     } catch (e) {
       _fetchingData.sink.add(false);
