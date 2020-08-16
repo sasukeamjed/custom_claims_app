@@ -12,21 +12,23 @@ class ShopOwnerServices extends ChangeNotifier {
 
   final ShopOwner user;
 
+  CollectionReference _shopsCollection = Firestore.instance.collection('Custom_claims_app').document('users').collection('shops');
+
   ShopOwnerServices({@required this.user}) : assert(user != null, 'user in shopservice is null');
 
   Future<void> addProduct(
-      {@required String shopName,
+      {@required String shopUID,
       @required String productName,
       @required double price,
       @required List<Asset> assets}) async {
-    assert(shopName != null && productName != null && price != null,
+    assert(shopUID != null && productName != null && price != null,
         'can not accept a null value');
 
     try {
-      List<String> imagesUrls = await _uploadImages(assets, shopName, productName);
+      List<String> imagesUrls = await _uploadImages(assets, user.shopName, productName);
 
       DocumentSnapshot shopDocument =
-          await Firestore.instance.collection('Shops').document(shopName).get();
+          await Firestore.instance.collection('Shops').document(user.shopName).get();
       if (shopDocument.exists) {
         print('Adding Document');
         return shopDocument.reference
@@ -39,12 +41,12 @@ class ShopOwnerServices extends ChangeNotifier {
         });
       }
     } catch (e) {
-      print('data_managment.dart 37: $e');
+      print('data_managment.dart 44: $e');
     }
   }
 
-  Stream<List<Product>> fetchAllProducts(){
-
+  Stream<List<Product>> fetchAllProductsByShopID(String uid){
+//    return _shopsCollection.document(uid).snapshots()
   }
 
 

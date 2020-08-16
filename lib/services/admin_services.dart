@@ -74,8 +74,19 @@ class AdminService {
     File shopImage,
   }) async {
     _registeringUser.sink.add(true);
+
+    FirestoreServices firestoreServices = FirestoreServices();
+    bool shopAvailabelity = await firestoreServices.checkIfUserDataExit(shopName, 'shop');
+
+    if(shopAvailabelity){
+      _registeringUser.sink.add(false);
+      throw "Error shop name is already used";
+    }
+
     String shopImageUrl =
         'https://firebasestorage.googleapis.com/v0/b/fir-auth-test-a160f.appspot.com/o/default_shop_img%2Fshop.png?alt=media&token=28f490a6-da3f-48c0-b18a-bcfd676d05f9';
+
+
 
     if (shopImage != null) {
       StorageUploadTask uploadTask = _firebaseStorage
@@ -100,7 +111,7 @@ class AdminService {
         _registeringUser.sink.add(false);
         throw(res.data['error']);
       }
-      FirestoreServices firestoreServices = FirestoreServices();
+
       print('admin_services.dart 104 newly created user ${res.data['user']}');
       try{
         print('admin_services.dart 106 => created user claim is : ${res.data['claim']}');

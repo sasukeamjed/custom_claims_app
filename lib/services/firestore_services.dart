@@ -9,7 +9,7 @@ class FirestoreServices{
   //ToDo: Fetch all products according to shop id
 
   //ToDo: Register user data in firestore if not exit
-  Future<bool> _checkIfUserDataExit(String userId, String claim) async{
+  Future<bool> checkIfUserDataExit(String userId, String claim) async{
     DocumentSnapshot doc;
     print('firestore_services.dart 14 claim => $claim');
     if(claim == 'admin'){
@@ -21,6 +21,7 @@ class FirestoreServices{
         return false;
       }
     }else if(claim == 'shop'){
+      //Note: the userId in shops are thire names
       doc = await _db.collection('shops').document(userId).get();
       if(doc.data != null){
         return true;
@@ -41,7 +42,7 @@ class FirestoreServices{
   }
 
   Future<void> createAdmin({@required String uid, @required String email, @required String phoneNumber, @required String claim}) async{
-    bool userData = await _checkIfUserDataExit(uid, claim);
+    bool userData = await checkIfUserDataExit(uid, claim);
     print('firestore_services.dart 45 userData => $userData');
     if(userData){
       return null;
@@ -51,16 +52,22 @@ class FirestoreServices{
   }
 
   Future<void> createShop({@required String uid, @required String email, @required String shopName, @required String shopOwnerName, @required String phoneNumber, @required String claim}) async{
-    bool userData = await _checkIfUserDataExit(uid, claim);
+    bool userData = await checkIfUserDataExit(uid, claim);
     if(userData){
       return null;
     }
     Map<String, dynamic> data = {'uid' : uid, 'email' : email, 'shopName' : shopName, 'shopOwnerNme' : shopOwnerName,'phoneNumber' : phoneNumber};
-    return _db.collection('shops').document(uid).setData(data);
+    return _db.collection('shops').document(shopName).get().then((snapshot) {
+      if(snapshot.exists){
+        return throw "Error This Shop Name is not available";
+      }else{
+        return snapshot.reference.setData(data);
+      }
+    });
   }
 
   Future<void> createCustomer({@required String uid, @required String email, @required String phoneNumber, @required String claim}) async{
-    bool userData = await _checkIfUserDataExit(uid, claim);
+    bool userData = await checkIfUserDataExit(uid, claim);
     if(userData){
       return null;
     }

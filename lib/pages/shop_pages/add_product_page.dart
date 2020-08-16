@@ -118,7 +118,7 @@ class _AddProductPageState extends State<AddProductPage> {
           RaisedButton(
             child: Text('Add The Product To Firebase'),
             onPressed: (){
-              services.addProduct(shopName: widget.shopName, productName: _productNameController.text, price: double.parse(_productPriceController.text), assets: images);
+              services.addProduct(shopUID: services.user.uid, productName: _productNameController.text, price: double.parse(_productPriceController.text), assets: images);
             },
           ),
         ],
