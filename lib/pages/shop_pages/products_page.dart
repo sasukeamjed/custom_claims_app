@@ -5,9 +5,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class ProductsPage extends StatelessWidget {
-  final ShopOwner shop;
+  final List<Product> products;
 
-  ProductsPage({Key key, this.shop}) : super(key: key);
+  ProductsPage({Key key, this.products}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +16,7 @@ class ProductsPage extends StatelessWidget {
         title: Text('Shop Products'),
       ),
       body: GridView.builder(
-        itemCount: shop.products.length,
+        itemCount: products.length,
         gridDelegate:
         SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
         itemBuilder: (BuildContext context, int index) {
@@ -27,19 +27,19 @@ class ProductsPage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Expanded(
-                      child: shop.products[index].urls.isEmpty ? Image.asset('assets/shop.png') : Image.network(
-                        shop.products[index].urls[0],
+                      child: products[index].urls.isEmpty ? Image.asset('assets/shop.png') : Image.network(
+                        products[index].urls[0],
                       ),
                     ),
                     SizedBox(
                       height: 10,
                     ),
-                    Text(shop.products[index].productName),
+                    Text(products[index].productName),
                     SizedBox(
                       height: 10,
                     ),
                     Align(
-                      child: Text(shop.products[index].productPrice.toString()),
+                      child: Text(products[index].productPrice.toString()),
                       alignment: Alignment.center,
                     ),
                     SizedBox(
@@ -53,7 +53,7 @@ class ProductsPage extends StatelessWidget {
                     onPressed: () {
                       Navigator.pushReplacement(context, MaterialPageRoute(
                         builder: (context) =>
-                            ProductEditPage(product: shop.products[index],),
+                            ProductEditPage(product: products[index],),
                       ));
                     },
                   ),

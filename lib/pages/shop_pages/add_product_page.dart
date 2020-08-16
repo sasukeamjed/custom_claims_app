@@ -74,54 +74,81 @@ class _AddProductPageState extends State<AddProductPage> {
 
   @override
   Widget build(BuildContext context) {
-    final ShopOwnerServices services = Provider.of<Object>(context);
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Add Product'),
-      ),
-      body: ListView(
-        padding: EdgeInsets.symmetric(horizontal: 32),
-        children: <Widget>[
-          Container(
-            height: 300,
-            width: 300,
-            child: buildGridView(),
-          ),
-          SizedBox(
-            height: 25.0,
-          ),
-          RaisedButton(
-            child: Text('Pick Product Images'),
-            onPressed: loadAssets,
-          ),
-          SizedBox(
-            height: 25.0,
-          ),
-          TextField(
-            controller: _productNameController,
-            decoration: InputDecoration(
-              hintText: 'Product Name',
+    final ShopOwnerServices shopServices = Provider.of<Object>(context);
+    return GestureDetector(
+      onTap: (){
+        FocusScopeNode currentFocus = FocusScope.of(context);
+        if(!currentFocus.hasPrimaryFocus){
+          currentFocus.unfocus();
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('Add Product'),
+        ),
+        body: ListView(
+          padding: EdgeInsets.symmetric(horizontal: 32),
+          children: <Widget>[
+            Container(
+              height: 300,
+              width: 300,
+              child: buildGridView(),
             ),
-          ),
-          SizedBox(
-            height: 25.0,
-          ),
-          TextField(
-            controller: _productPriceController,
-            decoration: InputDecoration(
-              hintText: 'Product Price',
+            SizedBox(
+              height: 25.0,
             ),
-          ),
-          SizedBox(
-            height: 25.0,
-          ),
-          RaisedButton(
-            child: Text('Add The Product To Firebase'),
-            onPressed: (){
-              services.addProduct(shopUID: services.user.uid, productName: _productNameController.text, price: double.parse(_productPriceController.text), assets: images);
-            },
-          ),
-        ],
+            RaisedButton(
+              child: Text('Pick Product Images'),
+              onPressed: (){
+                FocusScopeNode currentFocus = FocusScope.of(context);
+                if(!currentFocus.hasPrimaryFocus){
+                  currentFocus.unfocus();
+                }
+                loadAssets();
+              },
+            ),
+            SizedBox(
+              height: 25.0,
+            ),
+            TextField(
+              controller: _productNameController,
+              decoration: InputDecoration(
+                hintText: 'Product Name',
+              ),
+            ),
+            SizedBox(
+              height: 25.0,
+            ),
+            TextField(
+              controller: _productPriceController,
+              decoration: InputDecoration(
+                hintText: 'Product Price',
+              ),
+            ),
+            SizedBox(
+              height: 25.0,
+            ),
+            StreamBuilder<bool>(
+              stream: shopServices.fetchingData,
+              builder: (context, snapshot) {
+                if(snapshot.data){
+                  print('add product page 135 => ${snapshot.data}');
+                  return CircularProgressIndicator();
+                }
+                return RaisedButton(
+                  child: Text('Add The Product To Firebase'),
+                  onPressed: (){
+                    FocusScopeNode currentFocus = FocusScope.of(context);
+                    if(!currentFocus.hasPrimaryFocus){
+                      currentFocus.unfocus();
+                    }
+                    shopServices.addProduct(productName: _productNameController.text, price: double.parse(_productPriceController.text), assets: images);
+                  },
+                );
+              }
+            ),
+          ],
+        ),
       ),
     );
   }

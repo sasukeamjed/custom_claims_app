@@ -1,8 +1,9 @@
 import 'dart:io';
 
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:customclaimsapp/models/users/admin_model.dart';
 import 'package:customclaimsapp/services/firestore_services.dart';
-import 'file:///C:/flutter_lessons/wrood_project/custom_claims_app/lib/models/users/admin_model.dart';
+
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:rxdart/rxdart.dart';

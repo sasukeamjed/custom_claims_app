@@ -1,6 +1,7 @@
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:customclaimsapp/models/product_model.dart';
-import 'file:///C:/flutter_lessons/wrood_project/custom_claims_app/lib/models/users/admin_model.dart';
+import 'package:customclaimsapp/models/users/admin_model.dart';
+
 import 'package:customclaimsapp/models/users/customer_model.dart';
 import 'package:customclaimsapp/models/users/shop_owner_model.dart';
 import 'package:customclaimsapp/services/admin_services.dart';

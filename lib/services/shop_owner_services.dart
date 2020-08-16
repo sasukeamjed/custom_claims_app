@@ -7,49 +7,57 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:rxdart/rxdart.dart';
 
 class ShopOwnerServices extends ChangeNotifier {
-
   final ShopOwner user;
 
-  CollectionReference _shopsCollection = Firestore.instance.collection('Custom_claims_app').document('users').collection('shops');
+  final BehaviorSubject<bool> _fetchingData = BehaviorSubject<bool>();
 
-  ShopOwnerServices({@required this.user}) : assert(user != null, 'user in shopservice is null');
+  Stream<bool> get fetchingData => _fetchingData.stream;
+
+
+  ShopOwnerServices({@required this.user})
+      : assert(user != null, 'user in shopservice is null');
 
   Future<void> addProduct(
-      {@required String shopUID,
-      @required String productName,
+      {@required String productName,
       @required double price,
       @required List<Asset> assets}) async {
-    assert(shopUID != null && productName != null && price != null,
+    assert(user != null && productName != null && price != null,
         'can not accept a null value');
 
-    try {
-      List<String> imagesUrls = await _uploadImages(assets, user.shopName, productName);
+    _fetchingData.sink.add(true);
 
-      DocumentSnapshot shopDocument =
-          await Firestore.instance.collection('Shops').document(user.shopName).get();
-      if (shopDocument.exists) {
-        print('Adding Document');
-        return shopDocument.reference
-            .collection('Products')
-            .document()
-            .setData({
-          'productName': productName,
-          'price': price,
-          'imagesUrls': imagesUrls
-        });
-      }
+    try {
+      List<String> imagesUrls =
+          await _uploadImages(assets, user.shopName, productName);
+
+      await Firestore.instance.collection('Shops').document(user.shopName).get().then((snapshot) {
+        if (snapshot.exists) {
+          return snapshot.reference.collection('products').document().setData({
+            'productName': productName,
+            'price': price,
+            'imagesUrls': imagesUrls
+          });
+        }
+        else{
+          _fetchingData.sink.add(false);
+          throw"error: shop do not exits";
+        }
+      });
+      _fetchingData.sink.add(false);
     } catch (e) {
+      _fetchingData.sink.add(false);
       print('data_managment.dart 44: $e');
     }
   }
 
-  Stream<List<Product>> fetchAllProductsByShopID(String uid){
-//    return _shopsCollection.document(uid).snapshots()
+  Stream<List<Product>> fetchAllProductsByShopName(String shopName) {
+    return Firestore.instance.collection('Shops').document(shopName).collection('products').snapshots().map((query) => query.documents).map((documents){
+      return documents.map((snapshot) => Product(uid: snapshot.documentID, productName: snapshot.data['productName'], productPrice: snapshot.data['price'], urls: snapshot.data['imagesUrls'])).toList();
+    });
   }
-
-
 
 //  Future<List<Product>> fetchAllProducts({@required String shopName}) async {
 //    print('shop_owner_services 36 => fetchAllProducts function is fired');
@@ -65,62 +73,72 @@ class ShopOwnerServices extends ChangeNotifier {
 //      print('shop_owner_services 55 => $e');
 //    }
 //  }
-  
 
-  Future<void> deleteImageFromProduct(String shopName, Product product, String imgUrl) async{
+  Future<void> deleteImageFromProduct(
+      String shopName, Product product, String imgUrl) async {
+    if (product.urls.remove(imgUrl)) {
+      try {
+        DocumentSnapshot doc = await Firestore.instance
+            .collection('Shops')
+            .document('shop name')
+            .collection('Products')
+            .document(product.uid)
+            .get();
+        Product updatedProduct = Product(
+            uid: doc.documentID,
+            productName: doc.data['productName'],
+            productPrice: doc.data['price'],
+            urls: doc.data['imagesUrls'].cast<String>().toList());
 
-    if(product.urls.remove(imgUrl)){
-
-
-      try{
-        DocumentSnapshot doc = await Firestore.instance.collection('Shops').document('shop name').collection('Products').document(product.uid).get();
-        Product updatedProduct = Product(uid: doc.documentID, productName: doc.data['productName'], productPrice: doc.data['price'], urls: doc.data['imagesUrls'].cast<String>().toList());
-
-        print('Orginal Product product uid : ${product.uid}, product name: ${product.productName}, product price ${product.productPrice}, product urls: ${product.urls}');
-        print('Fetched Product product uid : ${updatedProduct.uid}, product name: ${updatedProduct.productName}, product price ${updatedProduct.productPrice}, product urls: ${updatedProduct.urls}');
-
-
+        print(
+            'Orginal Product product uid : ${product.uid}, product name: ${product.productName}, product price ${product.productPrice}, product urls: ${product.urls}');
+        print(
+            'Fetched Product product uid : ${updatedProduct.uid}, product name: ${updatedProduct.productName}, product price ${updatedProduct.productPrice}, product urls: ${updatedProduct.urls}');
 
         FirebaseStorage firebaseStorage = FirebaseStorage.instance;
-        StorageReference ref = await firebaseStorage.getReferenceFromUrl(imgUrl);
+        StorageReference ref =
+            await firebaseStorage.getReferenceFromUrl(imgUrl);
         await ref.delete();
         print('img was deleted from firebase storage');
 
-
-        updatedProduct.urls.forEach((element) async{
-
-          if(updatedProduct.urls.remove(element)){
+        updatedProduct.urls.forEach((element) async {
+          if (updatedProduct.urls.remove(element)) {
             await doc.reference.setData({
               'productName': updatedProduct.productName,
               'price': updatedProduct.productPrice,
               'imagesUrls': updatedProduct.urls,
             });
-
-          }else{
-            print('error in shop_owner_services file line 84: there is not image with this url');
+          } else {
+            print(
+                'error in shop_owner_services file line 84: there is not image with this url');
           }
           print(element);
           print(imgUrl);
           print(imgUrl == element);
         });
-      }catch(e){
+      } catch (e) {
         print(e);
       }
-      print('shop_owner_services file line 82: the url was removed successfuly from the class and the database');
+      print(
+          'shop_owner_services file line 82: the url was removed successfuly from the class and the database');
       notifyListeners();
-    }else{
-      print('error in shop_owner_services file line 84: there is not image with this url');
+    } else {
+      print(
+          'error in shop_owner_services file line 84: there is not image with this url');
     }
   }
 
-  Future<List<String>> _uploadImages(List<Asset> assets, String shopName, String productName) async {
+  Future<List<String>> _uploadImages(
+      List<Asset> assets, String shopName, String productName) async {
     print('Uploading Images');
     List<String> urls = [];
     await Future.forEach(assets, (asset) async {
       try {
         ByteData byteData = await asset.requestOriginal();
         List<int> imageData = byteData.buffer.asUint8List();
-        StorageReference ref = FirebaseStorage.instance.ref().child('shops/$shopName/$productName/${asset.name}');
+        StorageReference ref = FirebaseStorage.instance
+            .ref()
+            .child('shops/$shopName/$productName/${asset.name}');
         StorageUploadTask uploadTask = ref.putData(imageData);
 
         String url = await (await uploadTask.onComplete).ref.getDownloadURL();

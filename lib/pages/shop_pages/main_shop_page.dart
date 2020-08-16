@@ -1,3 +1,4 @@
+import 'package:customclaimsapp/models/product_model.dart';
 import 'package:customclaimsapp/pages/shop_pages/add_product_page.dart';
 import 'package:customclaimsapp/pages/shop_pages/products_page.dart';
 import 'package:customclaimsapp/services/auth.dart';
@@ -14,7 +15,7 @@ class MainShopPage extends StatelessWidget {
 
     print('this shit is : ${shop}');
 
-    if(shop == null){
+    if (shop == null) {
       return Scaffold(
         body: CircularProgressIndicator(),
       );
@@ -55,20 +56,32 @@ class MainShopPage extends StatelessWidget {
               subtitle: Text(
                   shop.user == null ? 'Waiting...' : shop.user.phoneNumber),
             ),
-            ListTile(
-              title:
-                  Text(shop.user == null ? 'Waiting...' : 'Products Numbers'),
-              subtitle: Text(shop.user.products.length.toString()),
-              trailing: Icon(Icons.keyboard_arrow_right),
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => ProductsPage(
-                              shop: shop.user,
-                            )));
-              },
-            ),
+            StreamBuilder<List<Product>>(
+                stream: shop.fetchAllProductsByShopName(shop.user.shopName),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting ||
+                      snapshot.data == null) {
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                  return ListTile(
+                    title: Text(
+                        shop.user == null ? 'Waiting...' : 'Products Numbers'),
+                    subtitle: Text(snapshot.data.length.toString()),
+                    trailing: Icon(Icons.keyboard_arrow_right),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ProductsPage(
+                            products: snapshot.data,
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                }),
           ],
         ),
       ),
