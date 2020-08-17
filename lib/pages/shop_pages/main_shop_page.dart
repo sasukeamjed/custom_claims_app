@@ -59,8 +59,9 @@ class MainShopPage extends StatelessWidget {
             StreamBuilder<List<Product>>(
                 stream: shop.fetchAllProductsByShopName(shop.user.shopName),
                 builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting ||
-                      snapshot.data == null) {
+                  print('62 main shop page connection state => ${snapshot.connectionState}');
+                  print('63 main shop page snapshot data => ${snapshot.data}');
+                  if (!snapshot.hasData) {
                     return Center(
                       child: CircularProgressIndicator(),
                     );

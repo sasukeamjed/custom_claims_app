@@ -16,7 +16,6 @@ class ShopOwnerServices extends ChangeNotifier {
 
   Stream<bool> get fetchingData => _fetchingData.stream;
 
-
   ShopOwnerServices({@required this.user})
       : assert(user != null, 'user in shopservice is null');
 
@@ -33,17 +32,20 @@ class ShopOwnerServices extends ChangeNotifier {
       List<String> imagesUrls =
           await _uploadImages(assets, user.shopName, productName);
 
-      await Firestore.instance.collection('Shops').document(user.shopName).get().then((snapshot) {
+      await Firestore.instance
+          .collection('Shops')
+          .document(user.shopName)
+          .get()
+          .then((snapshot) {
         if (snapshot.exists) {
           return snapshot.reference.collection('products').document().setData({
             'productName': productName,
             'price': price,
             'imagesUrls': imagesUrls
           });
-        }
-        else{
+        } else {
           _fetchingData.sink.add(false);
-          throw"error: shop do not exits";
+          throw "error: shop do not exits";
         }
       });
       _fetchingData.sink.add(false);
@@ -54,8 +56,23 @@ class ShopOwnerServices extends ChangeNotifier {
   }
 
   Stream<List<Product>> fetchAllProductsByShopName(String shopName) {
-    return Firestore.instance.collection('Shops').document(shopName).collection('products').snapshots().map((query) => query.documents).map((documents){
-      return documents.map((snapshot) => Product(uid: snapshot.documentID, productName: snapshot.data['productName'], productPrice: snapshot.data['price'], urls: snapshot.data['imagesUrls'])).toList();
+    return Firestore.instance
+        .collection('Shops')
+        .document(shopName)
+        .collection('products')
+        .snapshots()
+        .map((query) => query.documents)
+        .map((snapshots) {
+      return snapshots
+          .map((document){
+            print('68 shop owner services snapshot data => ${document.data}');
+            return Product(
+                uid: document.documentID,
+                productName: document.data['productName'],
+                productPrice: document.data['price'],
+                urls: document.data['imagesUrls']);
+      })
+          .toList();
     });
   }
 

@@ -76,9 +76,9 @@ class _AddProductPageState extends State<AddProductPage> {
   Widget build(BuildContext context) {
     final ShopOwnerServices shopServices = Provider.of<Object>(context);
     return GestureDetector(
-      onTap: (){
+      onTap: () {
         FocusScopeNode currentFocus = FocusScope.of(context);
-        if(!currentFocus.hasPrimaryFocus){
+        if (!currentFocus.hasPrimaryFocus) {
           currentFocus.unfocus();
         }
       },
@@ -99,9 +99,9 @@ class _AddProductPageState extends State<AddProductPage> {
             ),
             RaisedButton(
               child: Text('Pick Product Images'),
-              onPressed: (){
+              onPressed: () {
                 FocusScopeNode currentFocus = FocusScope.of(context);
-                if(!currentFocus.hasPrimaryFocus){
+                if (!currentFocus.hasPrimaryFocus) {
                   currentFocus.unfocus();
                 }
                 loadAssets();
@@ -129,24 +129,45 @@ class _AddProductPageState extends State<AddProductPage> {
               height: 25.0,
             ),
             StreamBuilder<bool>(
-              stream: shopServices.fetchingData,
-              builder: (context, snapshot) {
-                if(snapshot.data){
-                  print('add product page 135 => ${snapshot.data}');
-                  return CircularProgressIndicator();
-                }
-                return RaisedButton(
-                  child: Text('Add The Product To Firebase'),
-                  onPressed: (){
-                    FocusScopeNode currentFocus = FocusScope.of(context);
-                    if(!currentFocus.hasPrimaryFocus){
-                      currentFocus.unfocus();
-                    }
-                    shopServices.addProduct(productName: _productNameController.text, price: double.parse(_productPriceController.text), assets: images);
-                  },
-                );
-              }
-            ),
+                stream: shopServices.fetchingData,
+                builder: (context, snapshot) {
+                  return snapshot.data != true
+                      ? RaisedButton(
+                          child: Text('Add The Product To Firebase'),
+                          onPressed: () {
+                            FocusScopeNode currentFocus =
+                                FocusScope.of(context);
+                            if (!currentFocus.hasPrimaryFocus) {
+                              currentFocus.unfocus();
+                            }
+                            shopServices.addProduct(
+                                productName: _productNameController.text,
+                                price:
+                                    double.parse(_productPriceController.text),
+                                assets: images);
+                          },
+                        )
+                      : Center(
+                          child: CircularProgressIndicator(),
+                        );
+                  if (snapshot.data) {
+                    print('add product page 135 => ${snapshot.data}');
+                    return CircularProgressIndicator();
+                  }
+                  return RaisedButton(
+                    child: Text('Add The Product To Firebase'),
+                    onPressed: () {
+                      FocusScopeNode currentFocus = FocusScope.of(context);
+                      if (!currentFocus.hasPrimaryFocus) {
+                        currentFocus.unfocus();
+                      }
+                      shopServices.addProduct(
+                          productName: _productNameController.text,
+                          price: double.parse(_productPriceController.text),
+                          assets: images);
+                    },
+                  );
+                }),
           ],
         ),
       ),
