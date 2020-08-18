@@ -57,7 +57,7 @@ class MainShopPage extends StatelessWidget {
                   shop.user == null ? 'Waiting...' : shop.user.phoneNumber),
             ),
             StreamBuilder<List<Product>>(
-                stream: shop.fetchAllProductsByShopName(shop.user.shopName),
+                stream: shop.products,
                 builder: (context, snapshot) {
                   print('62 main shop page connection state => ${snapshot.connectionState}');
                   print('63 main shop page snapshot data => ${snapshot.data}');

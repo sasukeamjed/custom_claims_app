@@ -16,6 +16,13 @@ class ShopOwnerServices extends ChangeNotifier {
 
   Stream<bool> get fetchingData => _fetchingData.stream;
 
+  Stream<List<Product>> get products => _fetchAllProductsByShopName();
+
+  CollectionReference _db = Firestore.instance
+      .collection('Custom_claims_app')
+      .document('users')
+      .collection('shops');
+
   ShopOwnerServices({@required this.user})
       : assert(user != null, 'user in shopservice is null');
 
@@ -23,57 +30,67 @@ class ShopOwnerServices extends ChangeNotifier {
       {@required String productName,
       @required double price,
       @required List<Asset> assets}) async {
+
     assert(user != null && productName != null && price != null,
         'can not accept a null value');
 
     _fetchingData.sink.add(true);
 
     try {
-      List<String> imagesUrls =
-          await _uploadImages(assets, user.shopName, productName);
+      print('39 shop owner services shop name value is => ${user.shopName}');
+      DocumentSnapshot shopDoc = await _db.document('shop_name').get();
+      print('41 shop owner services shop doc  => ${shopDoc.data}');
+      if (shopDoc.exists) {
+        List<String> imagesUrls = await _uploadImages(assets, user.shopName, productName);
+        await shopDoc.reference.collection('products').document().setData({
+          'productName': productName,
+          'price': price,
+          'imagesUrls': imagesUrls
+        });
+      } else {
+        _fetchingData.sink.add(false);
+        throw "error: shop do not exits";
+      }
 
-      await Firestore.instance
-          .collection('Shops')
-          .document(user.shopName)
-          .get()
-          .then((snapshot) {
-        if (snapshot.exists) {
-          return snapshot.reference.collection('products').document().setData({
-            'productName': productName,
-            'price': price,
-            'imagesUrls': imagesUrls
-          });
-        } else {
-          _fetchingData.sink.add(false);
-          throw "error: shop do not exits";
-        }
-      });
       _fetchingData.sink.add(false);
     } catch (e) {
       _fetchingData.sink.add(false);
-      print('data_managment.dart 44: $e');
+      print('58 shop owner services : $e');
     }
   }
 
-  Stream<List<Product>> fetchAllProductsByShopName(String shopName) {
-    return Firestore.instance
-        .collection('Shops')
-        .document(shopName)
+  Stream<List<Product>> _fetchAllProductsByShopName() {
+    return _db
+        .document(user.shopName)
         .collection('products')
         .snapshots()
         .map((query) => query.documents)
-        .map((snapshots) {
-      return snapshots
-          .map((document){
-            print('68 shop owner services snapshot data => ${document.data}');
-            return Product(
+        .map((snapshots) => snapshots
+            .map((document) => Product(
                 uid: document.documentID,
                 productName: document.data['productName'],
                 productPrice: document.data['price'],
-                urls: document.data['imagesUrls']);
-      })
-          .toList();
-    });
+                urls: document.data['imagesUrls']))
+            .toList());
+
+//    return Firestore.instance
+//        .collection('Shops')
+//        .document(user.shopName)
+//        .collection('products')
+//        .snapshots()
+//        .map((query) => query.documents)
+//        .map((snapshots) {
+//      return snapshots
+//          .map((document){
+//            print('71 shop owner services snapshot data => ${document.data}');
+//            return Product(
+//                uid: document.documentID,
+//                productName: document.data['productName'],
+//                productPrice: document.data['price'],
+//                urls: document.data['imagesUrls']);
+//      })
+//          .toList();
+//    });
   }
 
 //  Future<List<Product>> fetchAllProducts({@required String shopName}) async {
