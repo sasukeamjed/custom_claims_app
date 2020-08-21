@@ -61,7 +61,7 @@ class MainShopPage extends StatelessWidget {
                 builder: (context, snapshot) {
                   print('62 main shop page connection state => ${snapshot.connectionState}');
                   print('63 main shop page snapshot data => ${snapshot.data}');
-                  if (!snapshot.hasData) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
                     return Center(
                       child: CircularProgressIndicator(),
                     );

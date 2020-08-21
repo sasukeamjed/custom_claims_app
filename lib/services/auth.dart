@@ -111,7 +111,7 @@ class AuthService extends ChangeNotifier {
           throw "auth.dart 110 shop is not saved in firestore database, maybe it is already saved";
         }
       }catch(e){
-        throw e;
+        print('114 auth.dart $e');
       }
 
       ShopOwnerServices shopServices = ShopOwnerServices(user: shop);

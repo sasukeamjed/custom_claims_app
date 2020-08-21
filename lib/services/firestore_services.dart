@@ -59,7 +59,7 @@ class FirestoreServices{
     Map<String, dynamic> data = {'uid' : uid, 'email' : email, 'shopName' : shopName, 'shopOwnerNme' : shopOwnerName,'phoneNumber' : phoneNumber};
     return _db.collection('shops').document(shopName).get().then((snapshot) {
       if(snapshot.exists){
-        return throw "Error This Shop Name is not available";
+        print("62 firestore_services shop name is already created");
       }else{
         return snapshot.reference.setData(data);
       }

@@ -37,9 +37,9 @@ class ShopOwnerServices extends ChangeNotifier {
     _fetchingData.sink.add(true);
 
     try {
-      print('39 shop owner services shop name value is => ${user.shopName}');
-      DocumentSnapshot shopDoc = await _db.document('shop_name').get();
-      print('41 shop owner services shop doc  => ${shopDoc.data}');
+      print('40 shop owner services shop name value is => ${user.shopName}');
+      DocumentSnapshot shopDoc = await _db.document(user.shopName).get();
+      print('42 shop owner services shop doc  => ${shopDoc.data}');
       if (shopDoc.exists) {
         List<String> imagesUrls = await _uploadImages(assets, user.shopName, productName);
         await shopDoc.reference.collection('products').document().setData({
@@ -66,11 +66,14 @@ class ShopOwnerServices extends ChangeNotifier {
         .snapshots()
         .map((query) => query.documents)
         .map((snapshots) => snapshots
-            .map((document) => Product(
-                uid: document.documentID,
-                productName: document.data['productName'],
-                productPrice: document.data['price'],
-                urls: document.data['imagesUrls']))
+            .map((document) {
+              print('shop_owner_services 70 document data => ${document.data}');
+              return Product(
+                  uid: document.documentID,
+                  productName: document.data['productName'],
+                  productPrice: document.data['price'],
+                  urls: document.data['imagesUrls']);
+    })
             .toList());
 
 //    return Firestore.instance
