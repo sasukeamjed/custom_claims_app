@@ -60,40 +60,35 @@ class ShopOwnerServices extends ChangeNotifier {
   }
 
   Stream<List<Product>> _fetchAllProductsByShopName() {
+
+//    return _db.document(user.shopName)
+//        .collection('products')
+//        .snapshots()
+//        .map((query) => query.documents)
+//        .map((snapshot) =>
+//        snapshot.map((document) => Product.fromFirestore(document.data)).toList());
+
+//    return _db.document(user.shopName)
+//        .collection('products')
+//        .snapshots()
+//        .map((query) => query.documents)
+//        .map((snapshots) =>
+//        snapshots.map((document) => Product.fromFirestore(document.data)).toList());
+
     return _db
         .document(user.shopName)
         .collection('products')
         .snapshots()
         .map((query) => query.documents)
-        .map((snapshots) => snapshots
-            .map((document) {
-              print('shop_owner_services 70 document data => ${document.data}');
-              return Product(
-                  uid: document.documentID,
-                  productName: document.data['productName'],
-                  productPrice: document.data['price'],
-                  urls: document.data['imagesUrls']);
-    })
-            .toList());
-
-//    return Firestore.instance
-//        .collection('Shops')
-//        .document(user.shopName)
-//        .collection('products')
-//        .snapshots()
-//        .map((query) => query.documents)
-//        .map((snapshots) {
-//      return snapshots
-//          .map((document){
-//            print('71 shop owner services snapshot data => ${document.data}');
-//            return Product(
-//                uid: document.documentID,
-//                productName: document.data['productName'],
-//                productPrice: document.data['price'],
-//                urls: document.data['imagesUrls']);
-//      })
-//          .toList();
-//    });
+        .map((snapshots) {
+      return snapshots
+          .map((document){
+            print('shop owner services 86 snapshot data => ${document.data}');
+            return Product(uid: document.documentID, productName: document.data['productName'], productPrice: document.data['price'], urls: document.data['imagesUrls']);
+            return Product.fromFirestore(document.data, document.documentID);
+      })
+          .toList();
+    });
   }
 
 //  Future<List<Product>> fetchAllProducts({@required String shopName}) async {
