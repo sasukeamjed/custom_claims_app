@@ -84,8 +84,11 @@ class ShopOwnerServices extends ChangeNotifier {
       return snapshots
           .map((document){
             print('shop owner services 86 snapshot data => ${document.data}');
-            return Product(uid: document.documentID, productName: document.data['productName'], productPrice: document.data['price'], urls: document.data['imagesUrls']);
-            return Product.fromFirestore(document.data, document.documentID);
+            print('shop owner services 87 images urls data => ${document.data['imagesUrls'].runtimeType}');
+            List<String> urls = document.data['imagesUrls'];
+            return Product.fromFirestore(document.documentID,document.data['productName'], document.data['price'], urls);
+//            return Product(uid: document.documentID, productName: document.data['productName'], productPrice: document.data['price'], urls: document.data['imagesUrls']);
+//            return Product.fromFirestore(document.data, document.documentID);
       })
           .toList();
     });
