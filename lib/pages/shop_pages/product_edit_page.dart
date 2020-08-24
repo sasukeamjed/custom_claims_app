@@ -6,9 +6,9 @@ import 'package:multi_image_picker/multi_image_picker.dart';
 import 'package:provider/provider.dart';
 
 class ProductEditPage extends StatefulWidget {
-  final Product product;
+  final int index;
 
-  const ProductEditPage({Key key, @required this.product}) : super(key: key);
+  const ProductEditPage({Key key, @required this.index}) : super(key: key);
 
   @override
   _ProductEditPageState createState() => _ProductEditPageState();
@@ -66,8 +66,9 @@ class _ProductEditPageState extends State<ProductEditPage> {
 
   @override
   Widget build(BuildContext context) {
+    final ShopOwnerServices services = Provider.of<Object>(context);
+    final images = [...chosedImages, ...services.user.products[widget.index].urls];
     print('product edit page is rebuild');
-    print(widget.product.urls.length);
     return Scaffold(
       appBar: AppBar(
         title: Text('Product Edit Page'),
@@ -80,13 +81,12 @@ class _ProductEditPageState extends State<ProductEditPage> {
               height: 300,
               width: 200,
               child: GridView.builder(
-                itemCount: widget.product.urls.length + chosedImages.length,
+                itemCount: images.length,
                 shrinkWrap: true,
                 gridDelegate:
                     SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
                 itemBuilder: (context, index){
-                  List<dynamic> images = [...widget.product.urls, ...chosedImages];
-                  return image(images[index], context);
+                  return image(images[index],services, context);
                 },
               ),
             ),
@@ -101,14 +101,14 @@ class _ProductEditPageState extends State<ProductEditPage> {
               height: 16,
             ),
             TextField(
-              controller: TextEditingController()..text = widget.product.productName,
+              controller: TextEditingController()..text = services.user.products[widget.index].productName,
             ),
             SizedBox(
               height: 16,
             ),
             TextField(
               controller: TextEditingController()
-                ..text = widget.product.productPrice.toString(),
+                ..text = services.user.products[widget.index].productPrice.toString(),
             ),
             RaisedButton(
               child: Text('Update Product'),
@@ -120,9 +120,8 @@ class _ProductEditPageState extends State<ProductEditPage> {
     );
   }
 
-  Widget image(image,BuildContext context) {
-    FirebaseStorage firebaseStorage = FirebaseStorage.instance;
-    final services = Provider.of<ShopOwnerServices>(context);
+  Widget image(image, ShopOwnerServices services,BuildContext context) {
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -134,7 +133,7 @@ class _ProductEditPageState extends State<ProductEditPage> {
               child: GestureDetector(
                 child: Icon(Icons.delete),
                 onTap: ()async {
-                  await services.deleteImageFromProduct('fish', widget.product, image);
+                  await services.deleteImageFromProduct(services.user.shopName, services.user.products[widget.index], image);
                   setState(() {
 
                   });

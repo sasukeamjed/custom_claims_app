@@ -53,7 +53,7 @@ class ProductsPage extends StatelessWidget {
                     onPressed: () {
                       Navigator.pushReplacement(context, MaterialPageRoute(
                         builder: (context) =>
-                            ProductEditPage(product: products[index],),
+                            ProductEditPage(index: index,),
                       ));
                     },
                   ),

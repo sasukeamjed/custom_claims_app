@@ -72,14 +72,14 @@ class MainShopPage extends StatelessWidget {
                     subtitle: Text(snapshot.data.length.toString()),
                     trailing: Icon(Icons.keyboard_arrow_right),
                     onTap: () {
-//                      Navigator.push(
-//                        context,
-//                        MaterialPageRoute(
-//                          builder: (context) => ProductsPage(
-//                            products: snapshot.data,
-//                          ),
-//                        ),
-//                      );
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ProductsPage(
+                            products: snapshot.data,
+                          ),
+                        ),
+                      );
                     },
                   );
                 }),
