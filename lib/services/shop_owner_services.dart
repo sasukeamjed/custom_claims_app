@@ -110,6 +110,10 @@ class ShopOwnerServices extends ChangeNotifier {
 //    }
 //  }
 
+  Future<Product> updateProduct(Product orginalProduct, List<Asset> chosedImages){
+    //First: check if the orginalProduct is equal the updated product, and if the choosed images are null or not
+  }
+
   Future<void> deleteImageFromProduct(
       String shopName, Product product, String imgUrl) async {
     if (product.urls.remove(imgUrl)) {

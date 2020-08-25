@@ -6,9 +6,9 @@ import 'package:multi_image_picker/multi_image_picker.dart';
 import 'package:provider/provider.dart';
 
 class ProductEditPage extends StatefulWidget {
-  final int index;
+  final Product product;
 
-  const ProductEditPage({Key key, @required this.index}) : super(key: key);
+  const ProductEditPage({Key key, @required this.product}) : super(key: key);
 
   @override
   _ProductEditPageState createState() => _ProductEditPageState();
@@ -67,7 +67,7 @@ class _ProductEditPageState extends State<ProductEditPage> {
   @override
   Widget build(BuildContext context) {
     final ShopOwnerServices services = Provider.of<Object>(context);
-    final images = [...chosedImages, ...services.user.products[widget.index].urls];
+    final images = [...chosedImages, ...widget.product.urls];
     print('product edit page is rebuild');
     return Scaffold(
       appBar: AppBar(
@@ -101,14 +101,14 @@ class _ProductEditPageState extends State<ProductEditPage> {
               height: 16,
             ),
             TextField(
-              controller: TextEditingController()..text = services.user.products[widget.index].productName,
+              controller: TextEditingController()..text = widget.product.productName,
             ),
             SizedBox(
               height: 16,
             ),
             TextField(
               controller: TextEditingController()
-                ..text = services.user.products[widget.index].productPrice.toString(),
+                ..text = widget.product.productPrice.toString(),
             ),
             RaisedButton(
               child: Text('Update Product'),
