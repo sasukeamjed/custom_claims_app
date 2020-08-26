@@ -64,6 +64,9 @@ class _ProductEditPageState extends State<ProductEditPage> {
     });
   }
 
+  TextEditingController productNameController = TextEditingController();
+  TextEditingController productPriceController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     final ShopOwnerServices services = Provider.of<Object>(context);
@@ -86,7 +89,7 @@ class _ProductEditPageState extends State<ProductEditPage> {
                 gridDelegate:
                     SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
                 itemBuilder: (context, index){
-                  return image(images[index],services, context);
+                  return image(images[index],services, widget.product,context);
                 },
               ),
             ),
@@ -101,18 +104,21 @@ class _ProductEditPageState extends State<ProductEditPage> {
               height: 16,
             ),
             TextField(
-              controller: TextEditingController()..text = widget.product.productName,
+              controller: productNameController..text = widget.product.productName,
             ),
             SizedBox(
               height: 16,
             ),
             TextField(
-              controller: TextEditingController()
+              controller: productPriceController
                 ..text = widget.product.productPrice.toString(),
             ),
             RaisedButton(
               child: Text('Update Product'),
-              onPressed: (){},
+              onPressed: () async{
+                Product updatedProduct = Product(uid: widget.product.uid, productName: productNameController.text, productPrice: double.parse(productPriceController.text), urls: widget.product.urls);
+                await services.updateProduct(updatedProduct, chosedImages);
+              },
             ),
           ],
         ),
@@ -120,7 +126,7 @@ class _ProductEditPageState extends State<ProductEditPage> {
     );
   }
 
-  Widget image(image, ShopOwnerServices services,BuildContext context) {
+  Widget image(image, ShopOwnerServices services, Product product,BuildContext context) {
 
     return Center(
       child: Padding(
@@ -133,7 +139,7 @@ class _ProductEditPageState extends State<ProductEditPage> {
               child: GestureDetector(
                 child: Icon(Icons.delete),
                 onTap: ()async {
-                  await services.deleteImageFromProduct(services.user.shopName, services.user.products[widget.index], image);
+                  await services.deleteImageFromProduct(services.user.shopName, product, image);
                   setState(() {
 
                   });

@@ -87,7 +87,7 @@ class ShopOwnerServices extends ChangeNotifier {
             print('shop owner services 87 images urls data => ${document.data['imagesUrls'].runtimeType}');
             List<String> urls = document.data['imagesUrls'].cast<String>();
             print('shop owner services 89 images urls data => ${urls.runtimeType}');
-            return Product.fromFirestore(document.documentID,document.data['productName'], document.data['price'], urls);
+            return Product(uid: document.documentID, productName: document.data['productName'], productPrice: document.data['price'], urls: urls);
 //            return Product(uid: document.documentID, productName: document.data['productName'], productPrice: document.data['price'], urls: document.data['imagesUrls']);
 //            return Product.fromFirestore(document.data, document.documentID);
       })
@@ -110,8 +110,16 @@ class ShopOwnerServices extends ChangeNotifier {
 //    }
 //  }
 
-  Future<Product> updateProduct(Product orginalProduct, List<Asset> chosedImages){
+  Future<Product> updateProduct(Product updatedProduct, List<Asset> chosedImages){
     //First: check if the orginalProduct is equal the updated product, and if the choosed images are null or not
+    print('shop owner Services 115 => updatedProduct uid = ${updatedProduct.uid}');
+    user.products.firstWhere((product) {
+      print('shop owner Services 117 => updatedProduct uid = ${updatedProduct.uid}, orginalProduct uid = ${product.uid}');
+      return product.uid == updatedProduct.uid;
+    }, orElse: (){
+      print('shop owner Services 119 => product not found');
+    });
+
   }
 
   Future<void> deleteImageFromProduct(
@@ -124,11 +132,7 @@ class ShopOwnerServices extends ChangeNotifier {
             .collection('Products')
             .document(product.uid)
             .get();
-        Product updatedProduct = Product(
-            uid: doc.documentID,
-            productName: doc.data['productName'],
-            productPrice: doc.data['price'],
-            urls: doc.data['imagesUrls'].cast<String>().toList());
+        Product updatedProduct = Product.fromFirestore(doc.data, doc.documentID);
 
         print(
             'Orginal Product product uid : ${product.uid}, product name: ${product.productName}, product price ${product.productPrice}, product urls: ${product.urls}');
