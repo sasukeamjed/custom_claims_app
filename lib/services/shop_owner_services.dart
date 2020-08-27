@@ -87,7 +87,9 @@ class ShopOwnerServices extends ChangeNotifier {
             print('shop owner services 87 images urls data => ${document.data['imagesUrls'].runtimeType}');
             List<String> urls = document.data['imagesUrls'].cast<String>();
             print('shop owner services 89 images urls data => ${urls.runtimeType}');
-            return Product(uid: document.documentID, productName: document.data['productName'], productPrice: document.data['price'], urls: urls);
+            Product product = Product(uid: document.documentID, productName: document.data['productName'], productPrice: document.data['price'], urls: urls);
+            user.products.add(product);
+            return product;
 //            return Product(uid: document.documentID, productName: document.data['productName'], productPrice: document.data['price'], urls: document.data['imagesUrls']);
 //            return Product.fromFirestore(document.data, document.documentID);
       })
@@ -112,14 +114,17 @@ class ShopOwnerServices extends ChangeNotifier {
 
   Future<Product> updateProduct(Product updatedProduct, List<Asset> chosedImages){
     //First: check if the orginalProduct is equal the updated product, and if the choosed images are null or not
-    print('shop owner Services 115 => updatedProduct uid = ${updatedProduct.uid}');
-    user.products.firstWhere((product) {
-      print('shop owner Services 117 => updatedProduct uid = ${updatedProduct.uid}, orginalProduct uid = ${product.uid}');
+    print('shop owner Services 117 => updatedProduct uid = ${updatedProduct.uid}');
+    print('shop owner Services 118 => products uid = ${user.products}');
+    Product orginalProduct = user.products.firstWhere((product) {
+      print('shop owner Services 120 => updatedProduct uid = ${updatedProduct.uid}, orginalProduct uid = ${product.uid}');
+      print('shop owner Services 121 => products equality => ${product.uid == updatedProduct.uid}');
       return product.uid == updatedProduct.uid;
     }, orElse: (){
-      print('shop owner Services 119 => product not found');
+      print('shop owner Services 124 => product not found');
+      return null;
     });
-
+    print('127 ${updatedProduct == orginalProduct}');
   }
 
   Future<void> deleteImageFromProduct(
