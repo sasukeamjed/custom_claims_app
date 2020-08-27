@@ -112,7 +112,7 @@ class ShopOwnerServices extends ChangeNotifier {
 //    }
 //  }
 
-  Future<Product> updateProduct(Product updatedProduct, List<Asset> chosedImages){
+  Future<Product> updateProduct(Product updatedProduct, List<Asset> chosedImages) async{
     //First: check if the orginalProduct is equal the updated product, and if the choosed images are null or not
     print('shop owner Services 117 => updatedProduct uid = ${updatedProduct.uid}');
     print('shop owner Services 118 => products uid = ${user.products}');
@@ -124,7 +124,21 @@ class ShopOwnerServices extends ChangeNotifier {
       print('shop owner Services 124 => product not found');
       return null;
     });
-    print('127 ${updatedProduct == orginalProduct}');
+    if(updatedProduct != orginalProduct || chosedImages != null){
+      List<String> updatedUrls;
+      List<String> urls = updatedProduct.urls;
+      try{
+        if(chosedImages != null){
+          updatedUrls = await _uploadImages(chosedImages, user.shopName, updatedProduct.productName);
+          urls = urls + updatedUrls;
+        }
+
+        _db.document(user.shopName).collection('products').document(updatedProduct.uid).updateData({});
+
+      }catch(e){
+
+      }
+    }
   }
 
   Future<void> deleteImageFromProduct(

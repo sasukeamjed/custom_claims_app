@@ -72,55 +72,63 @@ class _ProductEditPageState extends State<ProductEditPage> {
     final ShopOwnerServices services = Provider.of<Object>(context);
     final images = [...chosedImages, ...widget.product.urls];
     print('product edit page is rebuild');
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Product Edit Page'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 30),
-        child: ListView(
-          children: <Widget>[
-            Container(
-              height: 300,
-              width: 200,
-              child: GridView.builder(
-                itemCount: images.length,
-                shrinkWrap: true,
-                gridDelegate:
-                    SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
-                itemBuilder: (context, index){
-                  return image(images[index],services, widget.product,context);
+    return GestureDetector(
+      onTap: () {
+        FocusScopeNode currentFocus = FocusScope.of(context);
+        if (!currentFocus.hasPrimaryFocus) {
+          currentFocus.unfocus();
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('Product Edit Page'),
+        ),
+        body: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 30),
+          child: ListView(
+            children: <Widget>[
+              Container(
+                height: 300,
+                width: 200,
+                child: GridView.builder(
+                  itemCount: images.length,
+                  shrinkWrap: true,
+                  gridDelegate:
+                      SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+                  itemBuilder: (context, index){
+                    return image(images[index],services, widget.product,context);
+                  },
+                ),
+              ),
+              SizedBox(
+                height: 16,
+              ),
+              RaisedButton(
+                child: Text('Pick Images'),
+                onPressed: loadAssets,
+              ),
+              SizedBox(
+                height: 16,
+              ),
+              TextField(
+                controller: productNameController..text = widget.product.productName,
+              ),
+              SizedBox(
+                height: 16,
+              ),
+              TextField(
+                controller: productPriceController
+                  ..text = widget.product.productPrice.toString(),
+              ),
+              RaisedButton(
+                child: Text('Update Product'),
+                onPressed: () async{
+                  Product updatedProduct = Product(uid: widget.product.uid, productName: productNameController.text, productPrice: double.parse(productPriceController.text), urls: widget.product.urls);
+                  await services.updateProduct(updatedProduct, chosedImages);
                 },
               ),
-            ),
-            SizedBox(
-              height: 16,
-            ),
-            RaisedButton(
-              child: Text('Pick Images'),
-              onPressed: loadAssets,
-            ),
-            SizedBox(
-              height: 16,
-            ),
-            TextField(
-              controller: productNameController..text = widget.product.productName,
-            ),
-            SizedBox(
-              height: 16,
-            ),
-            TextField(
-              controller: productPriceController
-                ..text = widget.product.productPrice.toString(),
-            ),
-            RaisedButton(
-              child: Text('Update Product'),
-              onPressed: () async{
-                Product updatedProduct = Product(uid: widget.product.uid, productName: productNameController.text, productPrice: double.parse(productPriceController.text), urls: widget.product.urls);
-                await services.updateProduct(updatedProduct, chosedImages);
-              },
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -133,7 +141,7 @@ class _ProductEditPageState extends State<ProductEditPage> {
         padding: const EdgeInsets.all(8.0),
         child: Stack(
           children: <Widget>[
-            image is String ? Image.network(image, height: 300, width: 300,) : AssetThumb(asset: image, height: 300, width: 300,),
+            image is String ? Image.network(image, height: 300, width: 300,fit: BoxFit.fill,) : AssetThumb(asset: image, height: 300, width: 300,),
             Positioned(
               bottom: 0,
               child: GestureDetector(
