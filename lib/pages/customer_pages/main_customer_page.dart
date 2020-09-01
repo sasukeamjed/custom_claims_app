@@ -1,4 +1,4 @@
-import 'package:customclaimsapp/pages/customer_pages/dummy_page.dart';
+import 'package:customclaimsapp/pages/customer_pages/products_page.dart';
 import 'package:customclaimsapp/services/auth.dart';
 import 'package:customclaimsapp/services/customer_services.dart';
 import 'package:flutter/material.dart';
@@ -76,7 +76,7 @@ class _MainCustomerPageState extends State<MainCustomerPage> {
             RaisedButton(
               child: Text('Go to dummy page'),
               onPressed: (){
-                Navigator.of(context).push(MaterialPageRoute(builder: (context)=> DummyPage()));
+                Navigator.of(context).push(MaterialPageRoute(builder: (context)=> ProductsPage()));
               },
             ),
           ],

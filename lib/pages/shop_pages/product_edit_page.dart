@@ -120,12 +120,17 @@ class _ProductEditPageState extends State<ProductEditPage> {
                 controller: productPriceController
                   ..text = widget.product.productPrice.toString(),
               ),
-              RaisedButton(
-                child: Text('Update Product'),
-                onPressed: () async{
-                  Product updatedProduct = Product(uid: widget.product.uid, productName: productNameController.text, productPrice: double.parse(productPriceController.text), urls: widget.product.urls);
-                  await services.updateProduct(updatedProduct, chosedImages);
-                },
+              StreamBuilder<bool>(
+                stream: services.fetchingData,
+                builder: (context, snapshot) {
+                  return snapshot.data ? CircularProgressIndicator() : RaisedButton(
+                    child: Text('Update Product'),
+                    onPressed: () async{
+                      Product updatedProduct = Product(uid: widget.product.uid, productName: productNameController.text, productPrice: double.parse(productPriceController.text), urls: widget.product.urls);
+                      await services.updateProduct(updatedProduct, chosedImages);
+                    },
+                  );
+                }
               ),
             ],
           ),
@@ -147,7 +152,7 @@ class _ProductEditPageState extends State<ProductEditPage> {
               child: GestureDetector(
                 child: Icon(Icons.delete),
                 onTap: ()async {
-                  await services.deleteImageFromProduct(services.user.shopName, product, image);
+                  await services.deleteImageFromProduct(product: product,imageUrl: image);
                   setState(() {
 
                   });

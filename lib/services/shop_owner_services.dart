@@ -116,12 +116,14 @@ class ShopOwnerServices extends ChangeNotifier {
     //First: check if the orginalProduct is equal the updated product, and if the choosed images are null or not
     print('shop owner Services 117 => updatedProduct uid = ${updatedProduct.uid}');
     print('shop owner Services 118 => products uid = ${user.products}');
+    _fetchingData.sink.add(true);
     Product orginalProduct = user.products.firstWhere((product) {
       print('shop owner Services 120 => updatedProduct uid = ${updatedProduct.uid}, orginalProduct uid = ${product.uid}');
-      print('shop owner Services 121 => products equality => ${product.uid == updatedProduct.uid}');
+
       return product.uid == updatedProduct.uid;
     }, orElse: (){
       print('shop owner Services 124 => product not found');
+      _fetchingData.sink.add(false);
       return null;
     });
     if(updatedProduct != orginalProduct || chosedImages != null){
@@ -133,61 +135,32 @@ class ShopOwnerServices extends ChangeNotifier {
           urls = urls + updatedUrls;
         }
 
-        _db.document(user.shopName).collection('products').document(updatedProduct.uid).updateData({});
+        await _db.document(user.shopName).collection('products').document(updatedProduct.uid).updateData({
+          'productName': updatedProduct.productName,
+          'price': updatedProduct.productPrice,
+          'imagesUrls' : urls,
+        });
 
       }catch(e){
-
+        print('shop owner services 143 error: $e');
+        _fetchingData.sink.add(false);
       }
     }
+    _fetchingData.sink.add(false);
   }
 
-  Future<void> deleteImageFromProduct(
-      String shopName, Product product, String imgUrl) async {
-    if (product.urls.remove(imgUrl)) {
-      try {
-        DocumentSnapshot doc = await Firestore.instance
-            .collection('Shops')
-            .document('shop name')
-            .collection('Products')
-            .document(product.uid)
-            .get();
-        Product updatedProduct = Product.fromFirestore(doc.data, doc.documentID);
-
-        print(
-            'Orginal Product product uid : ${product.uid}, product name: ${product.productName}, product price ${product.productPrice}, product urls: ${product.urls}');
-        print(
-            'Fetched Product product uid : ${updatedProduct.uid}, product name: ${updatedProduct.productName}, product price ${updatedProduct.productPrice}, product urls: ${updatedProduct.urls}');
-
-        FirebaseStorage firebaseStorage = FirebaseStorage.instance;
-        StorageReference ref =
-            await firebaseStorage.getReferenceFromUrl(imgUrl);
-        await ref.delete();
-        print('img was deleted from firebase storage');
-
-        updatedProduct.urls.forEach((element) async {
-          if (updatedProduct.urls.remove(element)) {
-            await doc.reference.setData({
-              'productName': updatedProduct.productName,
-              'price': updatedProduct.productPrice,
-              'imagesUrls': updatedProduct.urls,
-            });
-          } else {
-            print(
-                'error in shop_owner_services file line 84: there is not image with this url');
-          }
-          print(element);
-          print(imgUrl);
-          print(imgUrl == element);
-        });
-      } catch (e) {
-        print(e);
+  Future<void> deleteImageFromProduct({@required Product product,@required String imageUrl}) async {
+    try{
+      if(product.urls.remove(imageUrl)){
+        await _db.document(user.shopName)
+            .collection('products')
+            .document(product.uid).updateData({'imagesUrls': product.urls});
+        print('Image Removed');
+      }else{
+        print('Failed to Remove Image');
       }
-      print(
-          'shop_owner_services file line 82: the url was removed successfuly from the class and the database');
-      notifyListeners();
-    } else {
-      print(
-          'error in shop_owner_services file line 84: there is not image with this url');
+    }catch(e){
+      print('shop owner services 152 error: $e');
     }
   }
 
