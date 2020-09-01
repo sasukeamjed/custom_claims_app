@@ -39,6 +39,7 @@ class _ProductsPageState extends State<ProductsPage> {
       body: StreamBuilder<List<Product>>(
         stream: productsStream,
         builder: (context, snapshot) {
+          print(snapshot.data);
           if(!snapshot.hasData){
             return Center(child: CircularProgressIndicator());
           }
