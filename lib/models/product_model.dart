@@ -9,11 +9,11 @@ class Product extends Equatable{
 
   Product({this.uid, this.productName, this.productPrice, this.urls});
 
-  Product.fromFirestore(Map<String, dynamic> data, String uid)
+  Product.fromFirestore({@required Map<String, dynamic> data, @required String uid})
       : productName = data['productName'],
         productPrice = data['price'],
         uid = uid,
-        urls = data['imagesUrls'];
+        urls = data['imagesUrls'].cast<String>();
 
 
   @override

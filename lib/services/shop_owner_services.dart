@@ -61,20 +61,6 @@ class ShopOwnerServices extends ChangeNotifier {
 
   Stream<List<Product>> _fetchAllProductsByShopName() {
 
-//    return _db.document(user.shopName)
-//        .collection('products')
-//        .snapshots()
-//        .map((query) => query.documents)
-//        .map((snapshot) =>
-//        snapshot.map((document) => Product.fromFirestore(document.data)).toList());
-
-//    return _db.document(user.shopName)
-//        .collection('products')
-//        .snapshots()
-//        .map((query) => query.documents)
-//        .map((snapshots) =>
-//        snapshots.map((document) => Product.fromFirestore(document.data)).toList());
-
     return _db
         .document(user.shopName)
         .collection('products')
