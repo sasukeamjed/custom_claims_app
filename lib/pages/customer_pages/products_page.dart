@@ -24,7 +24,7 @@ class _ProductsPageState extends State<ProductsPage> {
     print('go to dummy page $customerServices');
     customerServices.products().listen((shopEvents) {
       print('products_page 19 shopEvents => $shopEvents');
-      productsStream = MergeStream(shopEvents);
+      productsStream = shopEvents[0];
     });
     super.didChangeDependencies();
   }
