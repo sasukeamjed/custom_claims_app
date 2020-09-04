@@ -7,12 +7,16 @@ class CustomerServices {
   final Customer user;
 
   CustomerServices({@required this.user}) {
+    print('customer services cunstrocter 10');
     _streamOfShops().listen((shops) {
+      print('customer services cunstrocter 12');
       shops.map((shop) {
+        print('customer services cunstrocter 14');
         shop.reference.collection('products').snapshots().map((query) {
+          print('customer services cunstrocter 16');
           return query.documents;
         }).map((snapshots) => snapshots.map((snapshot) {
-          print('customer services cunstrocter 15');
+          print('customer services cunstrocter 19');
               Product product = Product.fromFirestore(data: snapshot.data, uid: snapshot.documentID);
               products.add(product);
             }));

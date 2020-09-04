@@ -22,10 +22,10 @@ class _ProductsPageState extends State<ProductsPage> {
   void didChangeDependencies() {
     customerServices = Provider.of<Object>(context);
     print('go to dummy page $customerServices');
-    customerServices.products().listen((shopEvents) {
-      print('products_page 19 shopEvents => $shopEvents');
-      productsStream = shopEvents[0];
-    });
+    // customerServices.products().listen((shopEvents) {
+    //   print('products_page 19 shopEvents => $shopEvents');
+    //   productsStream = shopEvents[0];
+    // });
     super.didChangeDependencies();
   }
 
