@@ -7,19 +7,14 @@ class CustomerServices {
   final Customer user;
 
   CustomerServices({@required this.user}) {
-    print('customer services cunstrocter 10');
-    _streamOfShops().listen((shops) {
-      print('customer services cunstrocter 12');
-      shops.map((shop) {
-        print('customer services cunstrocter 14');
-        shop.reference.collection('products').snapshots().map((query) {
-          print('customer services cunstrocter 16');
-          return query.documents;
-        }).map((snapshots) => snapshots.map((snapshot) {
-          print('customer services cunstrocter 19');
-              Product product = Product.fromFirestore(data: snapshot.data, uid: snapshot.documentID);
-              products.add(product);
-            }));
+    fetchAllProducts().listen((listOfStreams) {
+      listOfStreams.forEach((stream) {
+        stream.listen((listOfProducts) {
+          listOfProducts.forEach((product) {
+            print(product);
+            products?.add(product);
+          });
+        });
       });
     });
   }
@@ -42,5 +37,9 @@ class CustomerServices {
       print('customer services 24 => ${query.documents}');
       return query.documents;
     });
+  }
+
+  Stream<List<Stream<List<Product>>>> fetchAllProducts(){
+    return _db.snapshots().map((query) => query.documents.map((doc) => doc.reference.collection('products')).map((productsQuery) => productsQuery.snapshots().map((docsProd) => docsProd.documents).map((snapshots) => snapshots.map((snapshot) => Product.fromFirestore(data: snapshot.data, uid: snapshot.documentID)).toList())).toList());
   }
 }

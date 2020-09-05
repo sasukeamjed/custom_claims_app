@@ -36,19 +36,17 @@ class _ProductsPageState extends State<ProductsPage> {
       appBar: AppBar(
         title: Text("Products"),
       ),
-      body: StreamBuilder<List<Product>>(
-        stream: productsStream,
-        builder: (context, snapshot) {
-          print(snapshot.data);
-          if(!snapshot.hasData){
-            return Center(child: CircularProgressIndicator());
-          }
-          print(snapshot.data);
-          return Center(
-            child: Text("Products Page"),
-          );
-        }
-      ),
+      body: ListView.builder(itemBuilder: (context, index){
+        return Card(
+          child: Column(
+            children: [
+              Image.network(customerServices.products[index].urls[0]),
+              Text(customerServices.products[index].productName),
+              Text(customerServices.products[index].productPrice.toString()),
+            ],
+          ),
+        );
+      }, itemCount: customerServices.products.length,),
     );
   }
 }
